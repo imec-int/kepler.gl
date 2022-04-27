@@ -13,7 +13,7 @@ import {ProviderState} from 'reducers/provider-state-updaters';
 
 export type ModalContainerProps = {
   appName: string;
-  rootNode: React.ReactNode;
+  rootNode: React.ReactInstance;
   containerW: number;
   containerH: number;
   mapboxApiAccessToken: string;

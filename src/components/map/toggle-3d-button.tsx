@@ -18,24 +18,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {useCallback, useMemo} from 'react';
+import React, {ComponentType, useCallback, useMemo} from 'react';
 import classnames from 'classnames';
 
 import {Cube3d} from 'components/common/icons';
 import {MapControlButton} from 'components/common/styled-components';
-import MapControlTooltipFactory from './map-control-tooltip';
-import MapControlPanelFactory from './map-control-panel';
 import {FormattedMessage} from '../../localization';
 import TippyTooltip from 'components/common/tippy-tooltip';
+import { MapControls } from 'reducers';
 
-Toggle3dButtonFactory.deps = [MapControlTooltipFactory, MapControlPanelFactory];
+Toggle3dButtonFactory.deps = [];
 
-function Toggle3dButtonFactory(MapControlTooltip) {
+interface Toggle3dButtonIcons {
+  cube: ComponentType<any>;
+}
+
+export type Toggle3dButtonProps = {
+  dragRotate: boolean;
+  onTogglePerspective: () => void;
+  actionIcons: Toggle3dButtonIcons;
+  mapControls: MapControls;
+};
+
+function Toggle3dButtonFactory() {
   const defaultActionIcons = {
     cube: Cube3d
   };
   /** @type {import('./toggle-3d-button').Toggle3dButtonComponent} */
-  const Toggle3dButton = ({
+  const Toggle3dButton: React.FC<Toggle3dButtonProps> = ({
     dragRotate,
     onTogglePerspective,
     actionIcons = defaultActionIcons,

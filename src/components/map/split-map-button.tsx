@@ -18,25 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {useCallback, useMemo} from 'react';
+import React, {ComponentType, useCallback, useMemo} from 'react';
 import classnames from 'classnames';
 import {MapControlButton} from 'components/common/styled-components';
 import {Delete, Split} from 'components/common/icons';
-import MapControlTooltipFactory from './map-control-tooltip';
-import MapControlPanelFactory from './map-control-panel';
 import {FormattedMessage} from '../../localization';
 import TippyTooltip from '../common/tippy-tooltip';
+import { MapControls } from 'reducers';
 
-SplitMapButtonFactory.deps = [MapControlTooltipFactory, MapControlPanelFactory];
+SplitMapButtonFactory.deps = [];
 
-function SplitMapButtonFactory(MapControlTooltip) {
+interface SplitMapButtonIcons {
+  delete: ComponentType<any>;
+  split: ComponentType<any>;
+}
+
+export type SplitMapButtonProps = {
+  isSplit: boolean;
+  mapIndex: number;
+  onToggleSplitMap: (index?: number) => void;
+  actionIcons: SplitMapButtonIcons;
+  readOnly: boolean;
+  mapControls: MapControls;
+};
+
+function SplitMapButtonFactory() {
   const defaultActionIcons = {
     delete: Delete,
     split: Split
   };
 
   /** @type {import('./split-map-button').SplitMapButtonComponent} */
-  const SplitMapButton = ({
+  const SplitMapButton: React.FC<SplitMapButtonProps> = ({
     isSplit,
     mapIndex,
     onToggleSplitMap,

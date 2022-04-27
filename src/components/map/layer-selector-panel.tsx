@@ -26,12 +26,24 @@ import {Layers} from '../common/icons';
 import MapLayerSelector from '../common/map-layer-selector';
 import MapControlTooltipFactory from './map-control-tooltip';
 import MapControlPanelFactory from './map-control-panel';
+import { Layer } from 'layers';
+import { MapControls } from 'reducers';
 
 LayerSelectorPanelFactory.deps = [MapControlTooltipFactory, MapControlPanelFactory];
 
-function LayerSelectorPanelFactory(MapControlTooltip, MapControlPanel) {
+export type LayerSelectorPanelProps = {
+  onMapToggleLayer: (layerId: string) => void;
+  onToggleMapControl: (control: string) => void;
+  layers: ReadonlyArray<Layer>;
+  layersToRender: {[key: string]: boolean};
+  isSplit: boolean;
+  mapControls: MapControls;
+  readOnly: boolean;
+};
+
+function LayerSelectorPanelFactory(MapControlTooltip: ReturnType<typeof MapControlTooltipFactory>, MapControlPanel: ReturnType<typeof MapControlPanelFactory>) {
   /** @type {import('./layer-selector-panel').LayerSelectorPanelComponent} */
-  const LayerSelectorPanel = ({
+  const LayerSelectorPanel: React.FC<LayerSelectorPanelProps> = ({
     onMapToggleLayer,
     onToggleMapControl,
     layers,
