@@ -22,6 +22,7 @@ import styled from 'styled-components';
 import ReactTooltip from 'react-tooltip';
 import {media} from 'styles/media-breakpoints';
 import classnames from 'classnames';
+import { RGBColor } from 'reducers';
 
 export const SelectText = styled.span`
   color: ${props => props.theme.labelColor};
@@ -379,14 +380,14 @@ export const ButtonGroup = styled.div`
 `;
 
 interface StyledPanelHeaderProps {
-  color: string[];
+  backgroundColor: RGBColor;
 }
 
 export const DatasetSquare = styled.div<StyledPanelHeaderProps>`
   display: inline-block;
   width: 10px;
   height: 10px;
-  background-color: rgb(${props => props.color.join(',')});
+  background-color: rgb(${props => props.backgroundColor.join(',')});
   margin-right: 12px;
 `;
 
