@@ -33,7 +33,7 @@ interface AnimationControllerProps<T extends number | number[]> {
   domain: number[] | null;
   value: T;
   baseSpeed?: number;
-}
+};
 
 class AnimationControllerType<T extends number | number[]> extends Component<
   AnimationControllerProps<T>

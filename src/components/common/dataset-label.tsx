@@ -32,7 +32,7 @@ const DatasetName = styled.div.attrs({
 `;
 
 interface DatasetLabelType {
-  dataset: KeplerTable
+  dataset: KeplerTable;
 }
 
 const DatasetLabel = ({dataset}: DatasetLabelType) => (
