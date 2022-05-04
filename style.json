@@ -1,0 +1,21 @@
+{
+  "version": 8,
+  "name": "My raster",
+  "sources": {
+    "raster-source-1": {
+      "type": "raster",
+      "tiles": [
+        "https://host.docker.internal:8085/geoserver/geoserver-imec/wms?service=WMS&version=1.1.0&request=GetMap&layers=geoserver-imec%3Apm10_atmo_street-20190121-0600UT&bbox=148000.0%2C205000.0%2C159000.0%2C217000.0&width=704&height=768&srs=EPSG%3A31370&styles=&format=application%2Fpng"
+      ],
+      "scheme": "tms"
+    }
+  },
+  "layers": [
+    {
+      "id": "raster-layer-1",
+      "type": "raster",
+      "source": "raster-source-1"
+    }
+  ],
+  "id": "my-raster"
+}
