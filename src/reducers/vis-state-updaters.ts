@@ -1713,6 +1713,8 @@ export const updateVisDataUpdater = (
     {}
   );
 
+  console.log(newDataEntries);
+
   const dataEmpty = Object.keys(newDataEntries).length < 1;
 
   // apply config if passed from action

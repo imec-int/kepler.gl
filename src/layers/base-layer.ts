@@ -473,7 +473,9 @@ class Layer {
    * @returns
    */
   getVisualChannelDescription(key: string): VisualChannelDescription {
-    const label = this.visConfigSettings[this.visualChannels[key].range].label;
+    const label = this.visConfigSettings[this.visualChannels[key].range]
+      ? this.visConfigSettings[this.visualChannels[key].range].label
+      : 'label tile';
     // e.g. label: Color, measure: Vehicle Type
     return {
       label: typeof label === 'function' ? label(this.config) : label,
@@ -849,6 +851,9 @@ class Layer {
    * @returns {boolean} yes or no
    */
   hasLayerData(layerData) {
+    if (this.type == 'tile') {
+      return true;
+    }
     if (!layerData) {
       return false;
     }

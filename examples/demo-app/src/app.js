@@ -61,6 +61,7 @@ import sampleAnimateTrip from './data/sample-animate-trip-data';
 import sampleIconCsv, {config as savedMapConfig} from './data/sample-icon-csv';
 
 import {processCsvData, processGeojson} from 'kepler.gl/processors';
+import {processRowObject} from '../../../src/processors/data-processor';
 /* eslint-enable no-unused-vars */
 
 const BannerHeight = 48;
@@ -131,6 +132,8 @@ class App extends Component {
       this.props.dispatch(loadRemoteMap({dataUrl: query.mapUrl}));
     }
 
+    this._addTileLayer();
+
     // delay zs to show the banner
     // if (!window.localStorage.getItem(BannerKey)) {
     //   window.setTimeout(this._showBanner, 3000);
@@ -141,6 +144,44 @@ class App extends Component {
     // Notifications
     // this._loadMockNotifications();
   }
+
+  _addTileLayer = () => {
+    console.log('add tile layer');
+    this.props.dispatch(
+      addDataToMap({
+        datasets: [
+          {
+            info: {
+              id: `tile-layer-1`,
+              label: `Tile Layer 1`
+            },
+            data: processRowObject([
+              {
+                url:
+                  'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:pm10_atmo_street-20190121-0600UT&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+              }
+            ])
+          }
+        ],
+        config: {
+          version: 'v1',
+          config: {
+            visState: {
+              layers: [
+                {
+                  type: 'tile',
+                  config: {
+                    dataId: 'tile-layer-1',
+                    isVisible: true
+                  }
+                }
+              ]
+            }
+          }
+        }
+      })
+    );
+  };
 
   _showBanner = () => {
     this.setState({showBanner: true});
