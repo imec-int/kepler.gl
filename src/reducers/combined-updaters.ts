@@ -139,7 +139,6 @@ export const addDataToMapUpdater = (
 ): KeplerGlState => {
   const {datasets, config, info} = payload;
 
-  console.log(payload);
   const options = {
     ...defaultAddDataToMapOptions,
     ...payload.options

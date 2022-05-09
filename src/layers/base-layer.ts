@@ -851,7 +851,7 @@ class Layer {
    * @returns {boolean} yes or no
    */
   hasLayerData(layerData) {
-    if (this.type == 'tile') {
+    if (this.type == 'tile' && Boolean(layerData.url && layerData.url.length)) {
       return true;
     }
     if (!layerData) {

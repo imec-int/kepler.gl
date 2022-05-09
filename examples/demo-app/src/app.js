@@ -146,14 +146,13 @@ class App extends Component {
   }
 
   _addTileLayer = () => {
-    console.log('add tile layer');
     this.props.dispatch(
       addDataToMap({
         datasets: [
           {
             info: {
               id: `tile-layer-1`,
-              label: `Tile Layer 1`
+              label: `WMTS Layer`
             },
             data: processRowObject([
               {

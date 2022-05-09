@@ -219,12 +219,11 @@ export function prepareLayersToRender(
 ): {
   [key: string]: boolean;
 } {
-  const temp = layers.reduce(
+  return layers.reduce(
     (accu, layer, idx) => ({
       ...accu,
       [layer.id]: isLayerRenderable(layer, layerData[idx]) && isLayerVisible(layer, mapLayers)
     }),
     {}
   );
-  return temp;
 }
