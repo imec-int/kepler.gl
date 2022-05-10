@@ -19,6 +19,7 @@ export type LayerClassesType = {
   '3D': Layer;
   trip: Layer;
   s2: Layer;
+  tile: Layer;
 };
 export const LayerClasses: LayerClassesType;
 
