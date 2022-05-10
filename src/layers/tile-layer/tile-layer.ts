@@ -80,14 +80,14 @@ export default class TileLayer extends Layer {
   }
 
   formatLayerData(datasets, oldLayerData) {
-    const {gpuFilter, dataContainer} = datasets[this.config.dataId];
+    const {dataContainer} = datasets[this.config.dataId];
     // const {data} = this.updateData(datasets, oldLayerData);
+    // TODO: add check to compare url to oldLayerData
     const accessors = this.getAttributeAccessors({dataContainer});
     // extract URL from row 0 column 0
     const url = dataContainer.valueAt(0, 0);
     return {
       url,
-      getFilterValue: gpuFilter.filterValueAccessor(dataContainer)(),
       ...accessors
     };
   }
@@ -102,7 +102,7 @@ export default class TileLayer extends Layer {
         data: url,
         minZoom: 0,
         maxZoom: 19,
-        tileSize: 256,
+        tileSize: 512,
 
         renderSubLayers: props => {
           const {
