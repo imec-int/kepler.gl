@@ -28,7 +28,7 @@ import {console as Console} from 'global/window';
 import Accessor from './accessor';
 import DropdownList, {ListItem} from './dropdown-list';
 import {Search} from 'components/common/icons';
-import KeyEvent from 'constants/keyevent';
+import {KeyEvent} from '@kepler.gl/constants';
 
 const DEFAULT_CLASS = 'typeahead';
 /**
@@ -128,7 +128,7 @@ interface TypeaheadProps {
   maxVisible?: number;
   resultsTruncatedMessage?: string;
   options?: ReadonlyArray<string | number | boolean | object>;
-  fixedOptions?: ReadonlyArray<string | number | boolean | object>;
+  fixedOptions?: ReadonlyArray<string | number | boolean | object> | null;
   allowCustomValues?: number;
   initialValue?: string;
   value?: string;

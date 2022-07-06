@@ -51,11 +51,7 @@ import {
 
 // default-settings
 import ThreeDBuildingLayer from 'deckgl-layers/3d-building-layer/3d-building-layer';
-import {
-  FILTER_TYPES,
-  GEOCODER_LAYER_ID,
-  THROTTLE_NOTIFICATION_TIME
-} from 'constants/default-settings';
+import {FILTER_TYPES, GEOCODER_LAYER_ID, THROTTLE_NOTIFICATION_TIME} from '@kepler.gl/constants';
 
 import ErrorBoundary from 'components/common/error-boundary';
 import {observeDimensions, unobserveDimensions} from '../utils/observe-dimensions';
@@ -72,20 +68,19 @@ import {
 import {Layer} from 'layers';
 import {SplitMapLayers} from 'reducers/vis-state-updaters';
 import {LayerBaseConfig, VisualChannelDomain} from 'layers/base-layer';
-import {Property} from 'csstype';
 
 /** @type {{[key: string]: React.CSSProperties}} */
-const MAP_STYLE = {
+const MAP_STYLE: {[key: string]: React.CSSProperties} = {
   container: {
     display: 'inline-block',
-    position: 'relative' as Property.Position,
+    position: 'relative',
     width: '100%',
     height: '100%'
   },
   top: {
-    position: 'absolute' as Property.Position,
+    position: 'absolute',
     top: '0px',
-    pointerEvents: 'none' as Property.PointerEvents,
+    pointerEvents: 'none',
     width: '100%',
     height: '100%'
   }
@@ -174,27 +169,13 @@ export default function MapContainerFactory(
   Editor
 ): React.ComponentType<MapContainerProps> {
   class MapContainer extends Component<MapContainerProps> {
-    static propTypes = {
-      // required
-    };
-
+    displayName = 'MapContainer';
     static defaultProps = {
       MapComponent: MapboxGLMap,
       deckGlProps: {},
       index: 0,
       primary: true
     };
-
-    previousLayers = {
-      // [layers.id]: mapboxLayerConfig
-    };
-
-    displayName = 'MapContainer';
-
-    _deck: any = null;
-    _map: mapboxgl.Map | null = null;
-    _ref = createRef<HTMLDivElement>();
-    _deckGLErrorsElapsed: {[id: string]: number} = {};
 
     constructor(props) {
       super(props);
@@ -218,6 +199,15 @@ export default function MapContainerFactory(
       }
       unobserveDimensions(this._ref.current);
     }
+
+    _deck: any = null;
+    _map: mapboxgl.Map | null = null;
+    _ref = createRef<HTMLDivElement>();
+    _deckGLErrorsElapsed: {[id: string]: number} = {};
+
+    previousLayers = {
+      // [layers.id]: mapboxLayerConfig
+    };
 
     _handleResize = dimensions => {
       const {primary} = this.props;
@@ -589,7 +579,7 @@ export default function MapContainerFactory(
             mapIndex={index}
             mapControls={mapControls}
             readOnly={this.props.readOnly}
-            scale={1}
+            scale={mapState.scale || 1}
             top={interactionConfig.geocoder && interactionConfig.geocoder.enabled ? 52 : 0}
             editor={editor}
             locale={locale}

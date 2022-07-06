@@ -19,11 +19,11 @@
 // THE SOFTWARE.
 
 import {S2Layer} from '@deck.gl/geo-layers';
-import {HIGHLIGH_COLOR_3D, CHANNEL_SCALES} from 'constants/default-settings';
+import {HIGHLIGH_COLOR_3D, CHANNEL_SCALES, ColorRange} from '@kepler.gl/constants';
 import {LAYER_VIS_CONFIGS} from 'layers/layer-factory';
+import {KeplerTable} from '../../utils';
 import {createDataContainer} from 'utils/table-utils';
-import {ColorRange} from '../../constants/color-ranges';
-import {Merge, RGBColor} from '../../reducers';
+import {Merge, RGBColor} from '@kepler.gl/types';
 import {DataContainerInterface} from '../../utils/table-utils/data-container-interface';
 import Layer, {
   LayerBaseConfig,
@@ -41,7 +41,7 @@ import {
   VisConfigRange
 } from '../layer-factory';
 import S2LayerIcon from './s2-layer-icon';
-import {getS2Center} from './s2-utils';
+import {getS2Center, validS2Token} from './s2-utils';
 
 export type S2GeometryLayerVisConfigSettings = {
   opacity: VisConfigNumber;
@@ -89,6 +89,11 @@ export type S2GeometryLayerConfig = Merge<
 > &
   S2GeometryLayerVisualChannelConfig;
 
+export type S2GeometryLayerData = {
+  index: number;
+  token: any;
+};
+
 const zoomFactorValue = 8;
 
 export const S2_TOKEN_FIELDS: {
@@ -105,11 +110,33 @@ export const S2TokenAccessor = ({token}: S2GeometryLayerColumnsConfig) => (
 export const defaultElevation = 500;
 export const defaultLineWidth = 1;
 
-export const S2VisConfigs = {
+export const S2VisConfigs: {
+  // Filled color
+  opacity: 'opacity';
+  colorRange: 'colorRange';
+  filled: VisConfigBoolean;
+
+  // stroke
+  thickness: VisConfigNumber;
+  strokeColor: 'strokeColor';
+  strokeColorRange: 'strokeColorRange';
+  sizeRange: 'strokeWidthRange';
+  stroked: 'stroked';
+
+  // height
+  enable3d: 'enable3d';
+  elevationScale: 'elevationScale';
+  enableElevationZoomFactor: 'enableElevationZoomFactor';
+  heightRange: 'elevationRange';
+
+  // wireframe
+  wireframe: 'wireframe';
+} = {
   // Filled color
   opacity: 'opacity',
   colorRange: 'colorRange',
   filled: {
+    ...LAYER_VIS_CONFIGS.filled,
     type: 'boolean',
     label: 'Fill Color',
     defaultValue: true,
@@ -143,7 +170,8 @@ export default class S2GeometryLayer extends Layer {
   constructor(props) {
     super(props);
     this.registerVisConfig(S2VisConfigs);
-    this.getPositionAccessor = dataContainer => S2TokenAccessor(this.config.columns)(dataContainer);
+    this.getPositionAccessor = (dataContainer: DataContainerInterface) =>
+      S2TokenAccessor(this.config.columns)(dataContainer);
   }
 
   get type(): 's2' {
@@ -221,7 +249,7 @@ export default class S2GeometryLayer extends Layer {
     };
   }
 
-  static findDefaultLayerProps({fields = []}) {
+  static findDefaultLayerProps({fields = []}: KeplerTable) {
     const foundColumns = this.findDefaultColumnField(S2_TOKEN_FIELDS, fields);
     if (!foundColumns || !foundColumns.length) {
       return {props: []};
@@ -236,13 +264,12 @@ export default class S2GeometryLayer extends Layer {
     };
   }
 
-  calculateDataAttribute({dataContainer, filteredIndex}, getS2Token) {
-    const data = [];
+  calculateDataAttribute({dataContainer, filteredIndex}: KeplerTable, getS2Token) {
+    const data: S2GeometryLayerData[] = [];
     for (let i = 0; i < filteredIndex.length; i++) {
       const index = filteredIndex[i];
       const token = getS2Token({index});
-
-      if (token) {
+      if (validS2Token(token)) {
         data.push({
           index,
           token
@@ -257,9 +284,10 @@ export default class S2GeometryLayer extends Layer {
     const centroids = dataContainer.reduce(
       (acc, entry, index) => {
         const s2Token = getS2Token({index});
-        if (s2Token) {
+        if (validS2Token(s2Token)) {
           acc.push(getS2Center(s2Token));
         }
+
         return acc;
       },
       [],
@@ -276,6 +304,9 @@ export default class S2GeometryLayer extends Layer {
   }
 
   formatLayerData(datasets, oldLayerData, opt = {}) {
+    if (this.config.dataId === null) {
+      return {};
+    }
     const {gpuFilter, dataContainer} = datasets[this.config.dataId];
     const getS2Token = this.getPositionAccessor(dataContainer);
     const {data} = this.updateData(datasets, oldLayerData);
@@ -310,7 +341,7 @@ export default class S2GeometryLayer extends Layer {
         ...defaultLayerProps,
         ...interactionConfig,
         ...data,
-        getS2Token: d => d.token,
+        getS2Token: (d: any) => d.token,
 
         autoHighlight: visConfig.enable3d,
         highlightColor: HIGHLIGH_COLOR_3D,

@@ -20,15 +20,14 @@
 
 import {createSelector} from 'reselect';
 import memoize from 'lodash.memoize';
-import {CHANNEL_SCALES, SCALE_FUNC, ALL_FIELD_TYPES} from 'constants/default-settings';
+import {CHANNEL_SCALES, SCALE_FUNC, ALL_FIELD_TYPES, ColorRange} from '@kepler.gl/constants';
 import {hexToRgb} from 'utils/color-utils';
 import MapboxGLLayer, {MapboxLayerGLConfig} from '../mapboxgl-layer';
 import HeatmapLayerIcon from './heatmap-layer-icon';
 import {LayerColumn, LayerWeightConfig, VisualChannels} from '../base-layer';
 import {DataContainerInterface} from 'utils/table-utils/data-container-interface';
 import {VisConfigColorRange, VisConfigNumber} from '../layer-factory';
-import {ColorRange} from 'constants/color-ranges';
-import {HexColor, Merge} from 'reducers';
+import {HexColor, Merge} from '@kepler.gl/types';
 
 export type HeatmapLayerVisConfigSettings = {
   opacity: VisConfigNumber;
@@ -60,7 +59,11 @@ export const pointPosAccessor = ({lat, lng}: HeatmapLayerColumnsConfig) => (
 export const pointColResolver = ({lat, lng}: HeatmapLayerColumnsConfig) =>
   `${lat.fieldIdx}-${lng.fieldIdx}`;
 
-export const heatmapVisConfigs = {
+export const heatmapVisConfigs: {
+  opacity: 'opacity';
+  colorRange: 'colorRange';
+  radius: 'heatmapRadius';
+} = {
   opacity: 'opacity',
   colorRange: 'colorRange',
   radius: 'heatmapRadius'
@@ -78,7 +81,7 @@ export const heatmapVisConfigs = {
  *  1, "rgb(178,24,43)"
  * ]
  */
-const heatmapDensity = (colorRange: ColorRange): string[] => {
+const heatmapDensity = (colorRange: ColorRange): (string | number)[] => {
   const scaleFunction = SCALE_FUNC.quantize;
 
   const colors: HexColor[] = ['#000000', ...colorRange.colors];
@@ -87,7 +90,7 @@ const heatmapDensity = (colorRange: ColorRange): string[] => {
     .domain([0, 1])
     .range(colors);
 
-  const colorDensity = scale.range().reduce((bands, level) => {
+  const colorDensity = scale.range().reduce((bands: (string | number)[], level) => {
     const invert = scale.invertExtent(level);
     return [
       ...bands,
@@ -160,6 +163,7 @@ class HeatmapLayer extends MapboxGLLayer {
       weightScale: 'linear'
     };
 
+    // @ts-expect-error
     return layerConfig;
   }
 
@@ -226,6 +230,9 @@ class HeatmapLayer extends MapboxGLLayer {
   );
 
   formatLayerData(datasets, oldLayerData) {
+    if (this.config.dataId === null) {
+      return {};
+    }
     const {weightField} = this.config;
     const {dataContainer} = datasets[this.config.dataId];
     const getPosition = this.getPositionAccessor(dataContainer);

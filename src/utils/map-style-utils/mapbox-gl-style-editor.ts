@@ -20,7 +20,7 @@
 
 import memoize from 'lodash.memoize';
 import clondDeep from 'lodash.clonedeep';
-import {DEFAULT_LAYER_GROUPS, DEFAULT_MAPBOX_API_URL} from 'constants/default-settings';
+import {DEFAULT_LAYER_GROUPS, DEFAULT_MAPBOX_API_URL} from '@kepler.gl/constants';
 import {BaseMapStyle, LayerGroup, MapState} from 'reducers';
 
 const mapUrlRg = /^mapbox:\/\/styles\/[-a-z0-9]{2,256}\/[-a-z0-9]{2,256}/;
@@ -36,7 +36,15 @@ export function getDefaultLayerGroupVisibility({layerGroups = []}: {layerGroups:
   );
 }
 
-const resolver = ({id, mapStyle, visibleLayerGroups = {}}) =>
+const resolver = ({
+  id,
+  mapStyle,
+  visibleLayerGroups = {}
+}: {
+  id?: string;
+  mapStyle: BaseMapStyle;
+  visibleLayerGroups: {[id: string]: LayerGroup | boolean} | false;
+}) =>
   `${id}:${Object.keys(visibleLayerGroups)
     .filter(d => visibleLayerGroups[d])
     .sort()
@@ -50,7 +58,13 @@ const resolver = ({id, mapStyle, visibleLayerGroups = {}}) =>
  * @returns top map style
  */
 export const editTopMapStyle = memoize(
-  ({mapStyle, visibleLayerGroups}: {mapStyle: BaseMapStyle; visibleLayerGroups: LayerGroup[]}) => {
+  ({
+    mapStyle,
+    visibleLayerGroups
+  }: {
+    mapStyle: BaseMapStyle;
+    visibleLayerGroups: {[id: string]: LayerGroup | boolean} | false;
+  }) => {
     const visibleFilters = (mapStyle.layerGroups || [])
       .filter(lg => visibleLayerGroups[lg.slug])
       .map(lg => lg.filter);

@@ -23,8 +23,8 @@ import {AGGREGATION_OPERATION, _BinSorter as BinSorter} from '@deck.gl/aggregati
 import {console as Console} from 'global/window';
 
 import {aggregate} from '../../utils/aggregate-utils';
-import {AGGREGATION_TYPES, SCALE_FUNC} from '../../constants/default-settings';
-import {RGBAColor} from '../../reducers';
+import {AGGREGATION_TYPES, SCALE_FUNC} from '@kepler.gl/constants';
+import {RGBAColor} from '@kepler.gl/types';
 
 export type UpdaterType = (this: CPUAggregator, step, props, dimensionUpdater) => void;
 export type BindedUpdaterType = () => void;
@@ -380,7 +380,7 @@ export const defaultElevationDimension: DimensionType<number> = {
 
 export const defaultDimensions = [defaultColorDimension, defaultElevationDimension];
 
-export type CPUAggregatorState = {layerData: {data?}; dimensions: {}};
+export type CPUAggregatorState = {layerData: {data?}; dimensions: {}; geoJSON?, clusterBuilder?};
 
 export default class CPUAggregator {
   static getDimensionScale: any;

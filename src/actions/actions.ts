@@ -18,11 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import ActionTypes from 'constants/action-types';
+import {default as ActionTypes} from './action-types';
 import {createAction} from '@reduxjs/toolkit';
 
 import {ParsedConfig} from '../schemas';
-import {RGBColor} from 'reducers/types';
+import {RGBColor} from '@kepler.gl/types';
 import {Bounds} from 'reducers/map-state-updaters';
 import {MapInfo} from 'reducers/vis-state-updaters';
 import {UiState} from 'reducers/ui-state-updaters';
@@ -70,6 +70,8 @@ export type AddDataToMapPayload = {
   config?: ParsedConfig;
   info?: Partial<MapInfo>;
 };
+
+export type ActionHandler<A extends (...args: any) => any> = (...args: Parameters<A>) => void;
 
 /**
  * Add data to kepler.gl reducer, prepare map with preset configuration if config is passed.

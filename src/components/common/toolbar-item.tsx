@@ -20,6 +20,7 @@
 
 import React from 'react';
 import styled from 'styled-components';
+import classnames from 'classnames';
 import {FormattedMessage} from 'localization';
 import {ComponentType, MouseEvent} from 'react';
 
@@ -27,9 +28,9 @@ interface StyledDivProps {
   active?: boolean;
 }
 
-const StyledDiv = styled.div.attrs({
-  className: 'toolbar-item'
-})<StyledDivProps>`
+const StyledDiv = styled.div.attrs(props => ({
+  className: classnames('toolbar-item', props.className)
+}))<StyledDivProps>`
   color: ${props =>
     props.active ? props.theme.toolbarItemIconHover : props.theme.panelHeaderIcon};
   padding: 12px 20px;
@@ -63,15 +64,15 @@ const StyledDiv = styled.div.attrs({
 
 export type ToolbarItemProps = {
   id?: string;
+  key?: string;
   label: string;
   className?: string;
   active?: boolean;
   onClose?: () => void;
-  onClick: (event: MouseEvent<HTMLDivElement>) => void;
+  onClick: ((event: MouseEvent<HTMLDivElement>) => void) | null;
   icon?: ComponentType<any>;
 };
 
-/** @type {typeof import('./toolbar-item').ToolbarItem} */
 const ToolbarItem = React.memo((props: ToolbarItemProps) => (
   <StyledDiv
     id={props.id}
@@ -83,7 +84,7 @@ const ToolbarItem = React.memo((props: ToolbarItemProps) => (
       if (typeof props.onClose === 'function') {
         props.onClose();
       }
-      props.onClick(e);
+      props.onClick?.(e);
     }}
   >
     {props.icon && <props.icon />}

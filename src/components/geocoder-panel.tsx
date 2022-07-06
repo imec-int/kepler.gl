@@ -20,20 +20,20 @@
 
 import React, {Component, ComponentType} from 'react';
 import styled from 'styled-components';
-import Processors from 'processors';
+import {processRowObject} from 'processors';
 import {FlyToInterpolator} from '@deck.gl/core';
 import KeplerGlSchema from 'schemas';
 import {getCenterAndZoomFromBounds} from 'utils/projection-utils';
 
-import Geocoder from './geocoder/geocoder';
+import Geocoder, {Result} from './geocoder/geocoder';
 import {
   GEOCODER_DATASET_NAME,
   GEOCODER_LAYER_ID,
   GEOCODER_GEO_OFFSET,
   GEOCODER_ICON_COLOR,
   GEOCODER_ICON_SIZE
-} from 'constants/default-settings';
-import {MapState} from 'reducers';
+} from '@kepler.gl/constants';
+import {MapState, Viewport} from 'reducers';
 
 const ICON_LAYER = {
   id: GEOCODER_LAYER_ID,
@@ -80,7 +80,7 @@ const StyledGeocoderPanel = styled.div<StyledGeocoderPanelProps>`
 
 function generateGeocoderDataset(lat, lon, text) {
   return {
-    data: Processors.processRowObject([
+    data: processRowObject([
       {
         lt: lat,
         ln: lon,
@@ -133,7 +133,7 @@ export default function GeocoderPanelFactory(): ComponentType<GeocoderPanelProps
       this.props.removeDataset(GEOCODER_DATASET_NAME);
     }
 
-    onSelected = (viewport = null, geoItem) => {
+    onSelected = (viewport: Viewport | null = null, geoItem: Result) => {
       const {
         center: [lon, lat],
         text,

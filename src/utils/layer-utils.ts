@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import {OVERLAY_TYPE} from 'layers/base-layer';
-import {GEOCODER_LAYER_ID} from 'constants/default-settings';
+import {FindDefaultLayerPropsReturnValue, OVERLAY_TYPE} from 'layers/base-layer';
+import {GEOCODER_LAYER_ID} from '@kepler.gl/constants';
 import {Layer, LayerClassesType} from 'layers';
 import {VisState, TooltipField, CompareType, SplitMapLayers} from 'reducers/vis-state-updaters';
 import KeplerTable, {Field} from './table-utils/kepler-table';
@@ -46,11 +46,9 @@ export function findDefaultLayer(dataset: KeplerTable, layerClasses: LayerClasse
   }
   const layerProps = (Object.keys(layerClasses) as Array<keyof LayerClassesType>).reduce(
     (previous, lc) => {
-      const result =
-        // @ts-expect-error
+      const result: FindDefaultLayerPropsReturnValue =
         typeof layerClasses[lc].findDefaultLayerProps === 'function'
-          ? // @ts-expect-error
-            layerClasses[lc].findDefaultLayerProps(dataset, previous)
+          ? layerClasses[lc].findDefaultLayerProps(dataset, previous)
           : {props: []};
 
       const props = Array.isArray(result) ? result : result.props || [];
@@ -69,6 +67,7 @@ export function findDefaultLayer(dataset: KeplerTable, layerClasses: LayerClasse
 
   // go through all layerProps to create layer
   return layerProps.map(props => {
+    // @ts-expect-error TODO: checking props.type !== null
     const layer = new layerClasses[props.type](props);
     return typeof layer.setInitialLayerConfig === 'function' && dataset.dataContainer
       ? layer.setInitialLayerConfig(dataset)

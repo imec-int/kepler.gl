@@ -35,10 +35,11 @@ import {
   FIELD_OPTS,
   SCALE_FUNC,
   CHANNEL_SCALE_SUPPORTED_FIELDS,
-  MAX_GPU_FILTERS
-} from 'constants/default-settings';
-import {ColorRange, COLOR_RANGES} from 'constants/color-ranges';
-import {DataVizColors} from 'constants/custom-color-ranges';
+  MAX_GPU_FILTERS,
+  ColorRange,
+  COLOR_RANGES,
+  DataVizColors
+} from '@kepler.gl/constants';
 import {
   LAYER_VIS_CONFIGS,
   DEFAULT_TEXT_LABEL,
@@ -57,11 +58,13 @@ import {getSampleData} from 'utils/table-utils/data-container-utils';
 
 import {hexToRgb, getColorGroupByName, reverseColorRange} from 'utils/color-utils';
 
-import {RGBColor, RGBAColor, MapState, Filter, Datasets, ValueOf} from 'reducers';
+import {MapState, Filter, Datasets} from 'reducers';
+import {RGBColor, RGBAColor, ValueOf, NestedPartial} from '@kepler.gl/types';
 import {LayerTextLabel, ColorUI} from './layer-factory';
 import {KeplerTable} from '../utils';
 import {DataContainerInterface} from 'utils/table-utils/data-container-interface';
 import {Field, GpuFilter} from 'utils/table-utils/kepler-table';
+import React from 'react';
 
 export type LayerColumn = {value: string | null; fieldIdx: number; optional?: boolean};
 
@@ -175,6 +178,7 @@ export type UpdateTrigger = {
   [key: string]: {};
 };
 export type LayerBounds = [number, number, number, number];
+export type FindDefaultLayerPropsReturnValue = {props: any[]; foundLayers?: any[]};
 /**
  * Approx. number of points to sample in a large data set
  */
@@ -235,7 +239,7 @@ class Layer {
     });
   }
 
-  get layerIcon() {
+  get layerIcon(): React.ElementType {
     return DefaultLayerIcon;
   }
 
@@ -243,8 +247,7 @@ class Layer {
     return OVERLAY_TYPE.deckgl;
   }
 
-  get type(): string {
-    // @ts-expect-error
+  get type(): string | null {
     return null;
   }
 
@@ -256,11 +259,11 @@ class Layer {
     return false;
   }
 
-  get requiredLayerColumns() {
+  get requiredLayerColumns(): string[] {
     return [];
   }
 
-  get optionalColumns() {
+  get optionalColumns(): string[] {
     return [];
   }
 
@@ -340,7 +343,7 @@ class Layer {
    *   };
    * }
    */
-  get layerInfoModal() {
+  get layerInfoModal(): any {
     return null;
   }
   /*
@@ -351,7 +354,7 @@ class Layer {
   static findDefaultLayerProps(
     dataset: KeplerTable,
     foundLayers?: any[]
-  ): {props: any[]; foundLayers?: any[]} {
+  ): FindDefaultLayerPropsReturnValue {
     return {props: [], foundLayers};
   }
 
@@ -709,7 +712,7 @@ class Layer {
     return this;
   }
 
-  updateLayerColorUI(prop: string, newConfig: Partial<ColorUI>): Layer {
+  updateLayerColorUI(prop: string, newConfig: NestedPartial<ColorUI>): Layer {
     const {colorUI: previous, visConfig} = this.config;
 
     if (!isPlainObject(newConfig) || typeof prop !== 'string') {
@@ -719,7 +722,6 @@ class Layer {
     const colorUIProp = Object.entries(newConfig).reduce((accu, [key, value]) => {
       return {
         ...accu,
-        // @ts-expect-error TODO: better type guard for isPlainObject
         [key]: isPlainObject(accu[key]) && isPlainObject(value) ? {...accu[key], ...value} : value
       };
     }, previous[prop] || DEFAULT_COLOR_UI);
@@ -1070,13 +1072,13 @@ class Layer {
     const dataUpdateTriggers = this.getDataUpdateTriggers(layerDataset);
     const triggerChanged = this.getChangedTriggers(dataUpdateTriggers);
 
-    if (triggerChanged.getMeta) {
+    if (triggerChanged && triggerChanged.getMeta) {
       this.updateLayerMeta(dataContainer, getPosition);
     }
 
     let data = [];
 
-    if (!triggerChanged.getData && oldLayerData && oldLayerData.data) {
+    if (!(triggerChanged && triggerChanged.getData) && oldLayerData && oldLayerData.data) {
       // same data
       data = oldLayerData.data;
     } else {

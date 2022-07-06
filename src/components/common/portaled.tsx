@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component, createRef, ElementType} from 'react';
+import React, {Component, createRef, ElementType, PropsWithChildren} from 'react';
 import debounce from 'lodash.debounce';
 import isEqual from 'lodash.isequal';
 
@@ -46,16 +46,16 @@ const getPageOffset = () => ({
 
 const addEventListeners = () => {
   if (document && document.body)
-    document.body.addEventListener('mousewheel', debounce(startListening, 100, true));
-  window.addEventListener('resize', debounce(startListening, 50, true));
+    document.body.addEventListener('mousewheel', debounce(startListening, 100));
+  window.addEventListener('resize', debounce(startListening, 50));
 };
 
 interface GetChildPosProps {
-  offsets: {
+  offsets: Partial<{
     topOffset: number;
     leftOffset: number;
     rightOffset: number;
-  };
+  }>;
   rect: DOMRect;
   childRect: DOMRect;
   pageOffset: {
@@ -72,7 +72,7 @@ export const getChildPos = ({offsets, rect, childRect, pageOffset, padding}: Get
   const pos = {
     top: pageOffset.y + rect.top + (topOffset || 0),
     ...(anchorLeft
-      ? {left: pageOffset.x + rect.left + leftOffset}
+      ? {left: pageOffset.x + rect.left + leftOffset!}
       : {right: window.innerWidth - rect.right - pageOffset.x + (rightOffset || 0)})
   };
 
@@ -131,7 +131,7 @@ const WINDOW_PAD = 40;
 
 const noop = () => {};
 
-interface PortaledProps {
+type PortaledProps = PropsWithChildren<{
   component: ElementType;
   onClose?: (
     event: React.MouseEvent<Element, globalThis.MouseEvent> | React.KeyboardEvent<Element>
@@ -140,11 +140,11 @@ interface PortaledProps {
   isOpened?: boolean;
   top: number;
   left?: number;
-  right: number;
+  right?: number;
   overlayZIndex?: number;
   modalProps?: Partial<ReactModal.Props>;
   modalStyle?: Partial<typeof defaultModalStyle>;
-}
+}>;
 
 interface PortaledState {
   pos:

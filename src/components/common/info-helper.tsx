@@ -27,7 +27,7 @@ import styled from 'styled-components';
 import {camelize} from 'utils/utils';
 
 interface StyledInfoHelperProps {
-  width: number;
+  width?: number;
 }
 
 const StyledInfoHelper = styled.div<StyledInfoHelperProps>`
@@ -48,9 +48,9 @@ const StyledInfoHelper = styled.div<StyledInfoHelperProps>`
 interface InfoHelperProps {
   description: string;
   containerClass?: string;
-  width: number;
+  width?: number;
   property?: string;
-  id: string;
+  id?: string;
 }
 
 function InfoHelperFactory() {

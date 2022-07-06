@@ -22,10 +22,10 @@ import React, {useState, useCallback} from 'react';
 import styled from 'styled-components';
 import classnames from 'classnames';
 import {FormattedMessage} from 'localization';
-import {Button, Tooltip} from 'components/common/styled-components';
+import {Button, Tooltip, ButtonProps} from 'components/common/styled-components';
 import AnimationSpeedSliderFactory from './animation-speed-slider';
 import {Reset, Play, Pause, Rocket, AnchorWindow, FreeWindow} from 'components/common/icons';
-import {ANIMATION_WINDOW} from 'constants/default-settings';
+import {ANIMATION_WINDOW} from '@kepler.gl/constants';
 import {preciseRound} from 'utils/data-utils';
 import {ReactComponentLike} from 'prop-types';
 
@@ -51,7 +51,7 @@ const StyledSpeedControl = styled.div`
   }
 `;
 
-interface IconButtonProps {
+interface IconButtonProps extends ButtonProps {
   collapsed?: boolean;
 }
 
@@ -134,7 +134,7 @@ export const AnimationWindowControl = ({
           data-for={`${item.id}-tooltip`}
           className="playback-control-button"
           onClick={() => {
-            onClick && onClick(item.id);
+            onClick?.(item.id);
             onHide();
           }}
           {...btnStyle}
@@ -157,9 +157,9 @@ interface PlaybackControls {
   speed: number;
   animationWindow?: string;
   setFilterAnimationWindow?: (id: string) => void;
-  updateAnimationSpeed;
+  updateAnimationSpeed?: (val: number) => void;
   pauseAnimation?: () => void;
-  resetAnimation: () => void;
+  resetAnimation?: () => void;
   startAnimation: () => void;
   playbackIcons?: typeof DEFAULT_ICONS;
   animationItems?: {[key: string]: AnimationItem};

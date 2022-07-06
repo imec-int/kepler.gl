@@ -22,7 +22,7 @@ import AggregationLayer, {AggregationLayerConfig} from '../aggregation-layer';
 import {ScatterplotLayer} from '@deck.gl/layers';
 
 import DeckGLClusterLayer from 'deckgl-layers/cluster-layer/cluster-layer';
-import {CHANNEL_SCALES} from 'constants/default-settings';
+import {CHANNEL_SCALES} from '@kepler.gl/constants';
 import ClusterLayerIcon from './cluster-layer-icon';
 import {
   AggregationTypes,
@@ -31,9 +31,8 @@ import {
   VisConfigRange,
   VisConfigSelection
 } from '../layer-factory';
-import {ColorRange} from '../../constants/color-ranges';
-import {AGGREGATION_TYPES} from '../../constants/default-settings';
-import {Merge} from '../../reducers';
+import {ColorRange} from '@kepler.gl/constants';
+import {Merge} from '@kepler.gl/types';
 import {VisualChannels} from '../base-layer';
 
 export type ClusterLayerVisConfigSettings = {
@@ -54,7 +53,13 @@ export type ClusterLayerVisConfig = {
 
 export type ClusterLayerConfig = Merge<AggregationLayerConfig, {visConfig: ClusterLayerVisConfig}>;
 
-export const clusterVisConfigs = {
+export const clusterVisConfigs: {
+  opacity: 'opacity';
+  clusterRadius: 'clusterRadius';
+  colorRange: 'colorRange';
+  radiusRange: 'clusterRadiusRange';
+  colorAggregation: 'colorAggregation';
+} = {
   opacity: 'opacity',
   clusterRadius: 'clusterRadius',
   colorRange: 'colorRange',
@@ -141,7 +146,7 @@ export default class ClusterLayer extends AggregationLayer {
       // hover layer
       ...(hoveredObject
         ? [
-            new ScatterplotLayer({
+            new ScatterplotLayer<{radius: number}>({
               id: `${this.id}-hovered`,
               data: [hoveredObject],
               getFillColor: this.config.highlightColor,

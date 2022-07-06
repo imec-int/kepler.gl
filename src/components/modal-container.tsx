@@ -24,7 +24,7 @@ import {createSelector} from 'reselect';
 import get from 'lodash.get';
 import document from 'global/document';
 
-import {EXPORT_DATA_TYPE_OPTIONS, EXPORT_MAP_FORMATS} from 'constants/default-settings';
+import {EXPORT_DATA_TYPE_OPTIONS, EXPORT_MAP_FORMATS} from '@kepler.gl/constants';
 import ModalDialogFactory from './modals/modal-dialog';
 import {exportJson, exportHtml, exportData, exportImage, exportMap} from 'utils/export-utils';
 import {isValidMapInfo} from 'utils/map-info-utils';
@@ -56,9 +56,9 @@ import {
   SAVE_MAP_ID,
   SHARE_MAP_ID,
   OVERWRITE_MAP_ID
-} from 'constants/default-settings';
+} from '@kepler.gl/constants';
 
-import KeyEvent from 'constants/keyevent';
+import {KeyEvent} from '@kepler.gl/constants';
 import {getFileFormatNames, getFileExtensions} from '../reducers/vis-state-selectors';
 import {MapState, MapStyle, UiState, VisState} from 'reducers';
 import {OnSuccessCallBack, OnErrorCallBack} from 'actions';
@@ -69,6 +69,8 @@ import * as UIStateActions from 'actions/ui-state-actions';
 import * as MapStyleActions from 'actions/map-style-actions';
 import * as ProviderActions from 'actions/provider-actions';
 import {ModalDialogProps} from './common/modal';
+import {Provider} from 'cloud-providers';
+import {findDOMNode} from 'react-dom';
 
 const DataTableModalStyle = css`
   top: 80px;
@@ -98,7 +100,7 @@ const DefaultStyle = css`
 
 export type ModalContainerProps = {
   appName: string;
-  rootNode: React.ReactNode;
+  rootNode: React.ReactInstance | null | undefined;
   containerW: number;
   containerH: number;
   mapboxApiAccessToken: string;
@@ -113,7 +115,7 @@ export type ModalContainerProps = {
   mapStyleActions: typeof MapStyleActions;
   providerActions: typeof ProviderActions;
   onSaveToStorage?: () => void;
-  cloudProviders: object[];
+  cloudProviders: Provider[];
   onLoadCloudMapSuccess?: OnSuccessCallBack;
   onLoadCloudMapError?: OnErrorCallBack;
   onExportToCloudSuccess?: OnSuccessCallBack;
@@ -147,7 +149,6 @@ export default function ModalContainerFactory(
   SaveMapModal: ReturnType<typeof SaveMapModalFactory>,
   ShareMapModal: ReturnType<typeof ShareMapModalFactory>
 ): React.ElementType<ModalContainerProps> {
-  /** @typedef {import('./modal-container').ModalContainerProps} ModalContainerProps */
   /** @augments React.Component<ModalContainerProps> */
   class ModalContainer extends Component<ModalContainerProps> {
     // TODO - remove when prop types are fully exported
@@ -274,6 +275,7 @@ export default function ModalContainerFactory(
         mapState,
         uiState,
         visState,
+        rootNode,
         visStateActions,
         uiStateActions,
         providerState
@@ -299,8 +301,6 @@ export default function ModalContainerFactory(
             const width = containerW * 0.9;
             template = (
               <DataTableModal
-                width={containerW * 0.9}
-                height={containerH * 0.85}
                 datasets={datasets}
                 dataId={editingDataset}
                 showDatasetTable={visStateActions.showDatasetTable}
@@ -311,6 +311,7 @@ export default function ModalContainerFactory(
             );
 
             // TODO: we need to make this width consistent with the css rule defined modal.js:32 max-width: 70vw
+            // @ts-ignore // TODO fix this after add types to Theme
             modalProps.cssStyle = css`
               ${DataTableModalStyle};
               ${media.palm`
@@ -393,7 +394,6 @@ export default function ModalContainerFactory(
                 supportedDataTypes={EXPORT_DATA_TYPE_OPTIONS}
                 datasets={datasets}
                 applyCPUFilter={this.props.visStateActions.applyCPUFilter}
-                onClose={this._closeModal}
                 onChangeExportDataType={uiStateActions.setExportDataType}
                 onChangeExportSelectedDataset={uiStateActions.setExportSelectedDataset}
                 onChangeExportFiltered={uiStateActions.setExportFiltered}
@@ -499,7 +499,6 @@ export default function ModalContainerFactory(
                 {...providerState}
                 cloudProviders={this.props.cloudProviders}
                 title={get(visState, ['mapInfo', 'title'])}
-                onSetCloudProvider={this.props.providerActions.setCloudProvider}
                 onUpdateImageSetting={uiStateActions.setExportImageSetting}
                 cleanupExportImage={uiStateActions.cleanupExportImage}
               />
@@ -543,8 +542,9 @@ export default function ModalContainerFactory(
         }
       }
 
-      return this.props.rootNode ? (
+      return rootNode ? (
         <ModalDialog
+          parentSelector={() => findDOMNode(rootNode) as HTMLElement}
           isOpen={Boolean(currentModal)}
           onCancel={this._closeModal}
           {...modalProps}

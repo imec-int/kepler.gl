@@ -23,7 +23,7 @@ import styled from 'styled-components';
 import TimeWidgetFactory from './filters/time-widget';
 import AnimationControlFactory from './common/animation-control/animation-control';
 import AnimationControllerFactory from './common/animation-control/animation-controller';
-import {ANIMATION_WINDOW, DIMENSIONS, FILTER_TYPES} from 'constants/default-settings';
+import {ANIMATION_WINDOW, DIMENSIONS, FILTER_TYPES} from '@kepler.gl/constants';
 import {getIntervalBins} from 'utils/filter-utils';
 import {media} from 'styles/media-breakpoints';
 import {AnimationConfig, TimeRangeFilter} from 'reducers';
@@ -33,7 +33,7 @@ const maxWidth = 1080;
 
 interface BottomWidgetContainerProps {
   hasPadding?: boolean;
-  width: number;
+  width?: number;
 }
 
 const BottomWidgetContainer = styled.div<BottomWidgetContainerProps>`
@@ -245,7 +245,7 @@ export default function BottomWidgetFactory(
                 <TimeWidget
                   // TimeWidget uses React.memo, here we pass width
                   // even though it doesnt use it, to force rerender
-                  filter={filters[enlargedFilterIdx]}
+                  filter={filters[enlargedFilterIdx] as TimeRangeFilter}
                   index={enlargedFilterIdx}
                   datasets={datasets}
                   readOnly={readOnly}

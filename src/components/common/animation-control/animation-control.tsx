@@ -20,13 +20,14 @@
 
 import React, {useCallback, useMemo} from 'react';
 import styled from 'styled-components';
+import classnames from 'classnames';
 
 import Slider from 'components/common/slider/slider';
 import {BottomWidgetInner} from 'components/common/styled-components';
 import PlaybackControlsFactory from './playback-controls';
 import FloatingTimeDisplayFactory from './floating-time-display';
 import {snapToMarks, datetimeFormatter} from 'utils/data-utils';
-import {DEFAULT_TIME_FORMAT} from 'constants/default-settings';
+import {DEFAULT_TIME_FORMAT} from '@kepler.gl/constants';
 
 const SliderWrapper = styled.div`
   display: flex;
@@ -48,9 +49,9 @@ const AnimationWidgetInner = styled.div`
   }
 `;
 
-const StyledDomain = styled.div.attrs({
-  className: 'animation-control__time-domain'
-})`
+const StyledDomain = styled.div.attrs(props => ({
+  className: classnames('animation-control__time-domain', props.className)
+}))`
   color: ${props => props.theme.titleTextColor};
   font-weight: 400;
   font-size: 10px;
