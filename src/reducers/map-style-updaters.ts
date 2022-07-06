@@ -35,15 +35,15 @@ import {
   DEFAULT_MAP_STYLES,
   DEFAULT_LAYER_GROUPS,
   DEFAULT_MAPBOX_API_URL
-} from 'constants/default-settings';
+} from '@kepler.gl/constants';
+import {ActionTypes} from 'actions';
 import {generateHashId} from 'utils/utils';
 import {LOAD_MAP_STYLE_TASK} from 'tasks/tasks';
 import {loadMapStyles, loadMapStyleErr} from 'actions/map-style-actions';
 import {rgb} from 'd3-color';
 import {hexToRgb} from 'utils/color-utils';
 
-import {RGBColor} from './types';
-import ActionTypes from 'constants/action-types';
+import {RGBColor} from '@kepler.gl/types';
 import {ReceiveMapConfigPayload, KeplerGlInitPayload} from '../actions/actions';
 import * as MapStyleActions from '../actions/map-style-actions';
 
@@ -77,7 +77,7 @@ export type InputStyle = {
   error: boolean;
   isValid: boolean;
   label: string | null;
-  style: Object | null;
+  style: any | null;
   url: string | null;
   icon: string | null;
   custom: boolean;
@@ -184,6 +184,13 @@ const mapStyleUpdaters = null;
  */
 export const INITIAL_MAP_STYLE: MapStyle = getDefaultState();
 
+interface GetMapStylesParam {
+  styleType: string;
+  visibleLayerGroups: {[id: string]: LayerGroup | boolean};
+  topLayerGroups: {[id: string]: LayerGroup | boolean};
+  mapStyles: {[id: string]: any};
+}
+
 /**
  * Create two map styles from preset map style, one for top map one for bottom
  *
@@ -193,7 +200,12 @@ export const INITIAL_MAP_STYLE: MapStyle = getDefaultState();
  * @param {Object} mapStyles - a dictionary of all map styles
  * @returns {Object} bottomMapStyle | topMapStyle | isRaster
  */
-export function getMapStyles({styleType, visibleLayerGroups, topLayerGroups, mapStyles}) {
+export function getMapStyles({
+  styleType,
+  visibleLayerGroups,
+  topLayerGroups,
+  mapStyles
+}: GetMapStylesParam) {
   const mapStyle = mapStyles[styleType];
 
   // style might not be loaded yet
@@ -211,7 +223,7 @@ export function getMapStyles({styleType, visibleLayerGroups, topLayerGroups, map
         visibleLayerGroups
       });
 
-  const hasTopLayer = editable && Object.values(topLayerGroups).some(v => v);
+  const hasTopLayer = editable > 0 && Object.values(topLayerGroups).some(v => v);
 
   // mute top layer if not visible in bottom layer
   const topLayers =
@@ -221,12 +233,11 @@ export function getMapStyles({styleType, visibleLayerGroups, topLayerGroups, map
         ...accu,
         [key]: topLayerGroups[key] && visibleLayerGroups[key]
       }),
-      {}
+      {} as {[id: string]: LayerGroup | boolean}
     );
 
   const topMapStyle = hasTopLayer
     ? editTopMapStyle({
-        id: styleType,
         mapStyle,
         visibleLayerGroups: topLayers
       })

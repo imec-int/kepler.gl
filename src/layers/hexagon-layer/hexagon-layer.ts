@@ -24,7 +24,7 @@ import EnhancedHexagonLayer from 'deckgl-layers/hexagon-layer/enhanced-hexagon-l
 import {hexagonToPolygonGeo} from './hexagon-utils';
 import HexagonLayerIcon from './hexagon-layer-icon';
 import {clamp} from 'utils/data-utils';
-import {Merge} from '../../reducers';
+import {Merge} from '@kepler.gl/types';
 import {
   AggregationTypes,
   VisConfigBoolean,
@@ -33,8 +33,7 @@ import {
   VisConfigRange,
   VisConfigSelection
 } from '../layer-factory';
-import {ColorRange} from '../../constants/color-ranges';
-import {AGGREGATION_TYPES} from '../../constants/default-settings';
+import {ColorRange} from '@kepler.gl/constants';
 
 export type HexagonLayerVisConfigSettings = {
   opacity: VisConfigNumber;
@@ -70,7 +69,21 @@ export type HexagonLayerVisConfig = {
 
 export type HexagonLayerConfig = Merge<AggregationLayerConfig, {visConfig: HexagonLayerVisConfig}>;
 
-export const hexagonVisConfigs = {
+export const hexagonVisConfigs: {
+  opacity: 'opacity';
+  worldUnitSize: 'worldUnitSize';
+  resolution: 'resolution';
+  colorRange: 'colorRange';
+  coverage: 'coverage';
+  sizeRange: 'elevationRange';
+  percentile: 'percentile';
+  elevationPercentile: 'elevationPercentile';
+  elevationScale: 'elevationScale';
+  enableElevationZoomFactor: 'enableElevationZoomFactor';
+  colorAggregation: 'colorAggregation';
+  sizeAggregation: 'sizeAggregation';
+  enable3d: 'enable3d';
+} = {
   opacity: 'opacity',
   worldUnitSize: 'worldUnitSize',
   resolution: 'resolution',

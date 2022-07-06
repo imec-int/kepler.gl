@@ -30,9 +30,9 @@ import {ArcLayer as DeckArcLayer} from '@deck.gl/layers';
 
 import {hexToRgb} from '../../utils/color-utils';
 import ArcLayerIcon from './arc-layer-icon';
-import {DEFAULT_LAYER_COLOR} from '../../constants/default-settings';
+import {DEFAULT_LAYER_COLOR, ColorRange} from '@kepler.gl/constants';
 import {DataContainerInterface} from '../../utils/table-utils/data-container-interface';
-import {RGBColor, Merge} from '../../reducers';
+import {RGBColor, Merge} from '@kepler.gl/types';
 
 import {
   VisConfigColorRange,
@@ -40,7 +40,7 @@ import {
   VisConfigNumber,
   VisConfigRange
 } from '../layer-factory';
-import {ColorRange} from '../../constants/color-ranges';
+import KeplerTable from '../../utils/table-utils/kepler-table';
 
 export type ArcLayerVisConfigSettings = {
   opacity: VisConfigNumber;
@@ -100,7 +100,13 @@ export const arcColumnLabels = {
   lng1: 'arc.lng1'
 };
 
-export const arcVisConfigs = {
+export const arcVisConfigs: {
+  opacity: 'opacity';
+  thickness: 'thickness';
+  colorRange: 'colorRange';
+  sizeRange: 'strokeWidthRange';
+  targetColor: 'targetColor';
+} = {
   opacity: 'opacity',
   thickness: 'thickness',
   colorRange: 'colorRange',
@@ -117,7 +123,8 @@ export default class ArcLayer extends Layer {
     super(props);
 
     this.registerVisConfig(arcVisConfigs);
-    this.getPositionAccessor = dataContainer => arcPosAccessor(this.config.columns)(dataContainer);
+    this.getPositionAccessor = (dataContainer: DataContainerInterface) =>
+      arcPosAccessor(this.config.columns)(dataContainer);
   }
 
   get type() {
@@ -169,7 +176,7 @@ export default class ArcLayer extends Layer {
 
   static findDefaultLayerProps({
     fieldPairs = []
-  }): {props: {color?: RGBColor; columns: ArcLayerColumnsConfig; label: string}[]} {
+  }: KeplerTable): {props: {color?: RGBColor; columns: ArcLayerColumnsConfig; label: string}[]} {
     if (fieldPairs.length < 2) {
       return {props: []};
     }
@@ -210,6 +217,9 @@ export default class ArcLayer extends Layer {
   }
 
   formatLayerData(datasets, oldLayerData) {
+    if (this.config.dataId === null) {
+      return {};
+    }
     const {gpuFilter, dataContainer} = datasets[this.config.dataId];
     const {data} = this.updateData(datasets, oldLayerData);
     const accessors = this.getAttributeAccessors({dataContainer});

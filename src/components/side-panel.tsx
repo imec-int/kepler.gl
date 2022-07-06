@@ -18,11 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {useCallback, useMemo, ComponentType} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {FormattedMessage} from 'localization';
-import {Datasets, Filter, InteractionConfig, MapStyle} from '../reducers';
-import {Layer, LayerClassesType} from '../layers';
-import {UiState} from 'reducers/ui-state-updaters';
 
 import {
   EXPORT_DATA_ID,
@@ -34,7 +31,9 @@ import {
   EXPORT_IMAGE_ID,
   ADD_DATA_ID,
   ADD_MAP_STYLE_ID
-} from 'constants/default-settings';
+} from '@kepler.gl/constants';
+
+import {Layers, FilterFunnel, Settings, CursorClick} from 'components/common/icons';
 
 import SidebarFactory from './side-panel/side-bar';
 import PanelHeaderFactory from './side-panel/panel-header';
@@ -48,43 +47,7 @@ import PanelTitleFactory from './side-panel/panel-title';
 
 import styled from 'styled-components';
 import get from 'lodash.get';
-
-import * as MapStyleActions from 'actions/map-style-actions';
-import * as VisStateActions from 'actions/vis-state-actions';
-import * as MapStateActions from 'actions/map-state-actions';
-import * as UIStateActions from 'actions/ui-state-actions';
-
-type SidePanelItem = {
-  id: string;
-  label: string;
-  iconComponent: ComponentType<any>;
-  component?: ComponentType<any>;
-};
-
-type SidePanelProps = {
-  appName: string;
-  appWebsite: string;
-  filters: Filter[];
-  interactionConfig: InteractionConfig;
-  layerBlending: string;
-  layers: Layer[];
-  layerClasses: LayerClassesType;
-  layerOrder: number[];
-  mapStyle: MapStyle;
-  onSaveMap?: Function;
-  width: number;
-  mapInfo: {title: string; description: string};
-  datasets: Datasets;
-  uiStateActions: typeof UIStateActions;
-  visStateActions: typeof VisStateActions;
-  mapStateActions: typeof MapStateActions;
-  mapStyleActions: typeof MapStyleActions;
-  uiState: UiState;
-  availableProviders: {hasShare: boolean; hasStorage: boolean};
-  mapSaved?: string | null;
-  panels: SidePanelItem[];
-  version: string;
-};
+import {SidePanelProps} from './types';
 
 export const StyledSidePanelContent = styled.div`
   ${props => props.theme.sidePanelScrollBar};
@@ -134,10 +97,18 @@ export default function SidePanelFactory(
     map: MapManager
   };
 
+  const SIDEBAR_ICONS = {
+    layer: Layers,
+    filter: FilterFunnel,
+    interaction: Settings,
+    map: CursorClick
+  };
+
   // We should defined sidebar panels here but keeping them for backward compatible
   const fullPanels = SIDEBAR_PANELS.map(component => ({
     ...component,
-    component: SIDEBAR_COMPONENTS[component.id]
+    component: SIDEBAR_COMPONENTS[component.id],
+    iconComponent: SIDEBAR_ICONS[component.id]
   }));
 
   const getCustomPanelProps = get(CustomPanels, ['defaultProps', 'getProps']) || (() => ({}));

@@ -21,7 +21,7 @@
 import {getCenterAndZoomFromBounds} from 'utils/projection-utils';
 import * as MapStateActions from 'actions/map-state-actions';
 import {ReceiveMapConfigPayload} from '../actions/actions';
-import ActionTypes from '../constants/action-types';
+import {ActionTypes} from 'actions';
 
 export type MapState = {
   pitch: number;
@@ -34,6 +34,7 @@ export type MapState = {
   height: number;
   isSplit: boolean;
   initialState?: any;
+  scale?: number;
 };
 
 export type Bounds = [number, number, number, number];

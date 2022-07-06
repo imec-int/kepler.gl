@@ -39,7 +39,7 @@ import {
   GeojsonDataMaps
 } from './geojson-utils';
 import GeojsonLayerIcon from './geojson-layer-icon';
-import {GEOJSON_FIELDS, HIGHLIGH_COLOR_3D, CHANNEL_SCALES} from '../../constants/default-settings';
+import {GEOJSON_FIELDS, HIGHLIGH_COLOR_3D, CHANNEL_SCALES, ColorRange} from '@kepler.gl/constants';
 import {
   LAYER_VIS_CONFIGS,
   VisConfigNumber,
@@ -49,9 +49,8 @@ import {
   VisConfigBoolean
 } from '../layer-factory';
 import {DataContainerInterface} from '../../utils/table-utils/data-container-interface';
-import {Merge, RGBColor} from '../../reducers';
-import {ColorRange} from '../../constants/color-ranges';
-import {Feature} from 'geojson';
+import {Merge, RGBColor} from '@kepler.gl/types';
+import {KeplerTable} from '../../utils';
 
 const SUPPORTED_ANALYZER_TYPES = {
   [DATA_TYPES.GEOMETRY]: true,
@@ -59,7 +58,25 @@ const SUPPORTED_ANALYZER_TYPES = {
   [DATA_TYPES.PAIR_GEOMETRY_FROM_STRING]: true
 };
 
-export const geojsonVisConfigs = {
+export const geojsonVisConfigs: {
+  opacity: 'opacity';
+  strokeOpacity: VisConfigNumber;
+  thickness: VisConfigNumber;
+  strokeColor: 'strokeColor';
+  colorRange: 'colorRange';
+  strokeColorRange: 'strokeColorRange';
+  radius: 'radius';
+
+  sizeRange: 'strokeWidthRange';
+  radiusRange: 'radiusRange';
+  heightRange: 'elevationRange';
+  elevationScale: 'elevationScale';
+  enableElevationZoomFactor: 'enableElevationZoomFactor';
+  stroked: 'stroked';
+  filled: 'filled';
+  enable3d: 'enable3d';
+  wireframe: 'wireframe';
+} = {
   opacity: 'opacity',
   strokeOpacity: {
     ...LAYER_VIS_CONFIGS.opacity,
@@ -166,7 +183,8 @@ export default class GeoJsonLayer extends Layer {
 
     this.dataToFeature = [];
     this.registerVisConfig(geojsonVisConfigs);
-    this.getPositionAccessor = dataContainer => featureAccessor(this.config.columns)(dataContainer);
+    this.getPositionAccessor = (dataContainer: DataContainerInterface) =>
+      featureAccessor(this.config.columns)(dataContainer);
   }
 
   get type() {
@@ -252,7 +270,7 @@ export default class GeoJsonLayer extends Layer {
     };
   }
 
-  static findDefaultLayerProps({label, fields = []}) {
+  static findDefaultLayerProps({label, fields = []}: KeplerTable) {
     const geojsonColumns = fields
       .filter(f => f.type === 'geojson' && SUPPORTED_ANALYZER_TYPES[f.analyzerType])
       .map(f => f.name);
@@ -306,6 +324,9 @@ export default class GeoJsonLayer extends Layer {
   }
 
   formatLayerData(datasets, oldLayerData) {
+    if (this.config.dataId === null) {
+      return {};
+    }
     const {gpuFilter, dataContainer} = datasets[this.config.dataId];
     const {data} = this.updateData(datasets, oldLayerData);
 
@@ -411,9 +432,9 @@ export default class GeoJsonLayer extends Layer {
         rounded: true,
         updateTriggers,
         _subLayerProps: {
-          ...(featureTypes.polygon ? {'polygons-stroke': opaOverwrite} : {}),
-          ...(featureTypes.line ? {'line-strings': opaOverwrite} : {}),
-          ...(featureTypes.point
+          ...(featureTypes?.polygon ? {'polygons-stroke': opaOverwrite} : {}),
+          ...(featureTypes?.line ? {'line-strings': opaOverwrite} : {}),
+          ...(featureTypes?.point
             ? {
                 points: {
                   lineOpacity: visConfig.strokeOpacity

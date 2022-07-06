@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component} from 'react';
+import React, {Component, ReactNode} from 'react';
 import {FormattedMessage} from 'localization';
 
 import styled, {FlattenSimpleInterpolation} from 'styled-components';
@@ -140,7 +140,7 @@ export const ModalFooter = ({cancel, confirm, cancelButton, confirmButton}) => {
   );
 };
 
-export interface ModalDialogProps {
+interface ModalDialogOwnProps {
   footer: boolean;
   close: boolean;
   isOpen: boolean;
@@ -155,9 +155,12 @@ export interface ModalDialogProps {
   cssStyle?: FlattenSimpleInterpolation | string;
   style?: React.CSSProperties;
   theme: any;
+  children?: ReactNode;
 }
 
-class ModalDialog extends Component<ModalDialogProps> {
+export type ModalDialogProps = ModalDialogOwnProps & Omit<ReactModal.Props, "style" | "ariaHideApp" | "className">
+
+export class ModalDialog extends Component<ModalDialogProps> {
   static defaultProps = {
     footer: false,
     close: true,

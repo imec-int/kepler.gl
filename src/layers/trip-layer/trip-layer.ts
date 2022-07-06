@@ -23,21 +23,22 @@ import uniq from 'lodash.uniq';
 import Layer, {LayerBaseConfig, LayerColumn} from '../base-layer';
 import {TripsLayer as DeckGLTripsLayer} from '@deck.gl/geo-layers';
 
-import {GEOJSON_FIELDS} from 'constants/default-settings';
+import {GEOJSON_FIELDS, ColorRange} from '@kepler.gl/constants';
 import TripLayerIcon from './trip-layer-icon';
 
 import {
   getGeojsonDataMaps,
   getGeojsonBounds,
-  getGeojsonFeatureTypes
+  getGeojsonFeatureTypes,
+  GeojsonDataMaps
 } from 'layers/geojson-layer/geojson-utils';
 
 import {isTripGeoJsonField, parseTripGeoJsonTimestamp} from './trip-utils';
 import TripInfoModalFactory from './trip-info-modal';
 import {DataContainerInterface} from '../../utils/table-utils/data-container-interface';
-import {ColorRange} from '../../constants/color-ranges';
 import {VisConfigColorRange, VisConfigNumber, VisConfigRange} from '../layer-factory';
-import {Merge} from '../../reducers';
+import {Merge} from '@kepler.gl/types';
+import {KeplerTable} from '../../utils';
 
 export type TripLayerVisConfigSettings = {
   opacity: VisConfigNumber;
@@ -73,7 +74,13 @@ const zoomFactorValue = 8;
 export const defaultThickness = 0.5;
 export const defaultLineWidth = 1;
 
-export const tripVisConfigs = {
+export const tripVisConfigs: {
+  opacity: 'opacity';
+  thickness: VisConfigNumber;
+  colorRange: 'colorRange';
+  trailLength: 'trailLength';
+  sizeRange: 'strokeWidthRange';
+} = {
   opacity: 'opacity',
   thickness: {
     type: 'number',
@@ -101,7 +108,7 @@ export default class TripLayer extends Layer {
   declare config: TripLayerConfig;
   declare meta: TripLayerMeta;
 
-  dataToFeature: {}[];
+  dataToFeature: GeojsonDataMaps;
   dataToTimeStamp: {}[];
   getFeature: (columns: TripLayerColumnsConfig) => (dataContainer: DataContainerInterface) => any;
   _layerInfoModal: () => JSX.Element;
@@ -177,7 +184,10 @@ export default class TripLayer extends Layer {
     return this.getFeature(this.config.columns)(dataContainer);
   }
 
-  static findDefaultLayerProps({label, fields = [], dataContainer, id}, foundLayers) {
+  static findDefaultLayerProps(
+    {label, fields = [], dataContainer, id}: KeplerTable,
+    foundLayers: any[]
+  ) {
     const geojsonColumns = fields.filter(f => f.type === 'geojson').map(f => f.name);
 
     const defaultColumns = {
@@ -233,6 +243,9 @@ export default class TripLayer extends Layer {
   }
 
   formatLayerData(datasets, oldLayerData) {
+    if (this.config.dataId === null) {
+      return {};
+    }
     // to-do: parse segment from dataContainer
     const {dataContainer, gpuFilter} = datasets[this.config.dataId];
     const {data} = this.updateData(datasets, oldLayerData);

@@ -22,7 +22,6 @@ import Layer, {
   LayerBaseConfig,
   LayerColorConfig,
   LayerColumn,
-  LayerColumns,
   LayerCoverageConfig,
   LayerSizeConfig
 } from '../base-layer';
@@ -32,19 +31,18 @@ import {H3HexagonLayer} from '@deck.gl/geo-layers';
 import EnhancedColumnLayer from 'deckgl-layers/column-layer/enhanced-column-layer';
 import {getCentroid, idToPolygonGeo, h3IsValid, getHexFields, Centroid} from './h3-utils';
 import H3HexagonLayerIcon from './h3-hexagon-layer-icon';
-import {CHANNEL_SCALES, HIGHLIGH_COLOR_3D} from 'constants/default-settings';
+import {CHANNEL_SCALES, HIGHLIGH_COLOR_3D, ColorRange} from '@kepler.gl/constants';
 
 import {createDataContainer} from 'utils/table-utils';
 import {
-  LayerVisConfigSettings,
   VisConfigBoolean,
   VisConfigColorRange,
   VisConfigNumber,
   VisConfigRange
 } from '../layer-factory';
-import {Merge} from '../../reducers';
+import {Merge} from '@kepler.gl/types';
 import {DataContainerInterface} from '../../utils/table-utils/data-container-interface';
-import {ColorRange} from '../../constants/color-ranges';
+import {KeplerTable} from '../../utils';
 
 export type HexagonIdLayerColumnsConfig = {
   hex_id: LayerColumn;
@@ -81,6 +79,8 @@ export type HexagonIdLayerConfig = Merge<
 > &
   HexagonIdLayerVisualChannelConfig;
 
+export type HexagonIdLayerData = {index: number; id; centroid: Centroid};
+
 const DEFAULT_LINE_SCALE_VALUE = 8;
 
 export const hexIdRequiredColumns: ['hex_id'] = ['hex_id'];
@@ -91,7 +91,16 @@ export const hexIdAccessor = ({hex_id}: HexagonIdLayerColumnsConfig) => (
 export const defaultElevation = 500;
 export const defaultCoverage = 1;
 
-export const HexagonIdVisConfigs = {
+export const HexagonIdVisConfigs: {
+  opacity: 'opacity';
+  colorRange: 'colorRange';
+  coverage: 'coverage';
+  enable3d: 'enable3d';
+  sizeRange: 'elevationRange';
+  coverageRange: 'coverageRange';
+  elevationScale: 'elevationScale';
+  enableElevationZoomFactor: 'enableElevationZoomFactor';
+} = {
   opacity: 'opacity',
   colorRange: 'colorRange',
   coverage: 'coverage',
@@ -109,8 +118,10 @@ export default class HexagonIdLayer extends Layer {
   declare visConfigSettings: HexagonIdLayerVisConfigSettings;
   constructor(props) {
     super(props);
+    this.dataToFeature = {centroids: []};
     this.registerVisConfig(HexagonIdVisConfigs);
-    this.getPositionAccessor = dataContainer => hexIdAccessor(this.config.columns)(dataContainer);
+    this.getPositionAccessor = (dataContainer: DataContainerInterface) =>
+      hexIdAccessor(this.config.columns)(dataContainer);
   }
 
   get type(): 'hexagonId' {
@@ -173,7 +184,7 @@ export default class HexagonIdLayer extends Layer {
     return this;
   }
 
-  static findDefaultLayerProps({fields = [], dataContainer}) {
+  static findDefaultLayerProps({fields = [], dataContainer}: KeplerTable) {
     const hexFields = getHexFields(fields, dataContainer);
     if (!hexFields.length) {
       return {props: []};
@@ -204,8 +215,8 @@ export default class HexagonIdLayer extends Layer {
     };
   }
 
-  calculateDataAttribute({dataContainer, filteredIndex}, getHexId) {
-    const data = [];
+  calculateDataAttribute({dataContainer, filteredIndex}: KeplerTable, getHexId) {
+    const data: HexagonIdLayerData[] = [];
 
     for (let i = 0; i < filteredIndex.length; i++) {
       const index = filteredIndex[i];
@@ -226,6 +237,9 @@ export default class HexagonIdLayer extends Layer {
   // TODO: fix complexity
   /* eslint-disable complexity */
   formatLayerData(datasets, oldLayerData, opt = {}) {
+    if (this.config.dataId === null) {
+      return {};
+    }
     const {gpuFilter, dataContainer} = datasets[this.config.dataId];
     const getHexId = this.getPositionAccessor(dataContainer);
     const {data} = this.updateData(datasets, oldLayerData);
@@ -289,7 +303,7 @@ export default class HexagonIdLayer extends Layer {
         ...data,
         wrapLongitude: false,
 
-        getHexagon: x => x.id,
+        getHexagon: (x: any) => x.id,
 
         // coverage
         coverage: config.coverageField ? 1 : visConfig.coverage,
