@@ -3,13 +3,14 @@ import {TileLayer as DeckGLTileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
 import {ArcLayerConfig} from '../arc-layer/arc-layer';
 import {
+  LayerVisConfigSettings,
   VisConfigColorRange,
   VisConfigColorSelect,
   VisConfigNumber,
   VisConfigRange
 } from '../layer-factory';
-import {ColorRange} from '../../constants/color-ranges';
-import {RGBColor} from '../../reducers';
+import {ColorRange} from '../../constants/dist';
+import {RGBColor, ValueOf} from '@kepler.gl/types';
 
 export type TileLayerVisConfigSettings = {
   opacity: VisConfigNumber;
@@ -28,8 +29,9 @@ export type TileLayerVisConfig = {
 };
 
 export type TileLayerConfig = ArcLayerConfig;
-export const TileLayerVisConfigs = {
-  label: 'Tile Layer',
+export const TileLayerVisConfigs: {
+  [key: string]: keyof LayerVisConfigSettings | ValueOf<LayerVisConfigSettings>;
+} = {
   opacity: 'opacity',
   thickness: 'thickness',
   colorRange: 'colorRange',
@@ -80,6 +82,9 @@ export default class TileLayer extends Layer {
   }
 
   formatLayerData(datasets, oldLayerData) {
+    if (this.config.dataId === null) {
+      return {};
+    }
     const {dataContainer} = datasets[this.config.dataId];
     // const {data} = this.updateData(datasets, oldLayerData);
     // TODO: add check to compare url to oldLayerData
@@ -93,7 +98,7 @@ export default class TileLayer extends Layer {
   }
 
   renderLayer(opts) {
-    const {data, gpuFilter, mapState, animationConfig} = opts;
+    const {data} = opts;
     const {url} = data;
 
     // Create new deck.gl Tile Layer with Bitmap sublayers
