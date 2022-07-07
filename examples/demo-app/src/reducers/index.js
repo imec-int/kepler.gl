@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Uber Technologies, Inc.
+// Copyright (c) 2022 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -81,6 +81,19 @@ const demoReducer = combineReducers({
     // In order to provide single file export functionality
     // we are going to set the mapbox access token to be used
     // in the exported file
+    mapState: {
+      altitude: 1.5,
+      bearing: 24,
+      dragRotate: true,
+      latitude: 51.217455,
+      longitude: 4.41295,
+      maxPitch: 60,
+      maxZoom: 24,
+      minPitch: 0,
+      minZoom: 0,
+      pitch: 50,
+      zoom: 11.78
+    },
     uiState: {
       exportMap: {
         ...DEFAULT_EXPORT_MAP,

@@ -81,7 +81,7 @@ export class Layer {
   updateLayerColorUI(prop: string, newConfig: Partial<ColorUI>): Layer;
   isValidToSave(): boolean;
   validateVisualChannel(channel: string);
-  getVisualChannelDescription(key: string): {label: string, measure: string};
+  getVisualChannelDescription(key: string): {label: string; measure: string};
 
   static findDefaultLayerProps(dataset: KeplerTable, foundLayers?: any[]);
   // static findDefaultColumnField(defaultFields, allFields)
@@ -101,8 +101,9 @@ export type LayerClassesType = {
   '3D': Layer;
   trip: Layer;
   s2: Layer;
+  tile: Layer;
 };
 export const LayerClasses: LayerClassesType;
 
-export type OVERLAY_TYPE = {[key: string]: string}
+export type OVERLAY_TYPE = {[key: string]: string};
 export const LAYER_ID_LENGTH: number;

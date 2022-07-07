@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Uber Technologies, Inc.
+// Copyright (c) 2022 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,8 @@ import {replaceMapControl} from './factories/map-control';
 import {replacePanelHeader} from './factories/panel-header';
 import {AUTH_TOKENS} from './constants/default-settings';
 import {messages} from './constants/localization';
+import {processRowObject} from '../../../src/processors/data-processor';
+import KeplerGlSchema from 'kepler.gl/schemas';
 
 import {
   loadRemoteMap,
@@ -43,6 +45,7 @@ import {
 import {loadCloudMap, addDataToMap, addNotification} from 'kepler.gl/actions';
 import {CLOUD_PROVIDERS} from './cloud-providers';
 
+let looper = false;
 const KeplerGl = require('kepler.gl/components').injectComponents([
   replaceLoadDataModal(),
   replaceMapControl(),
@@ -97,6 +100,7 @@ const GlobalStyle = styled.div`
 `;
 
 class App extends Component {
+  looper = false;
   state = {
     showBanner: false,
     width: window.innerWidth,
@@ -131,6 +135,12 @@ class App extends Component {
       this.props.dispatch(loadRemoteMap({dataUrl: query.mapUrl}));
     }
 
+    this._addTileLayer();
+
+    this.loopLayers(
+      'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_3<timeslot>_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+    );
+
     // delay zs to show the banner
     // if (!window.localStorage.getItem(BannerKey)) {
     //   window.setTimeout(this._showBanner, 3000);
@@ -140,6 +150,88 @@ class App extends Component {
 
     // Notifications
     // this._loadMockNotifications();
+  }
+
+  loopLayers = url => {
+    setTimeout(() => {
+      console.log('update layer?', this.looper);
+
+      this._updateTileLayer('tile-layer-1', url.replace('<timeslot>', this.looper ? 0 : 5));
+      this.looper = !this.looper;
+      this.loopLayers(url);
+    }, 3000);
+  };
+
+  getMapConfig() {
+    // retrieve kepler.gl store
+    const {demo} = this.props;
+    console.log(this.props);
+    // retrieve current kepler.gl instance store
+    const {map} = demo.keplerGl;
+
+    // create the config object
+    return KeplerGlSchema.getConfigToSave(map);
+  }
+
+  _addTileLayer = () => {
+    this.props.dispatch(
+      addDataToMap({
+        datasets: [
+          {
+            info: {
+              id: `tile-layer-1`,
+              label: `WMTS Layer`
+            },
+            data: processRowObject([
+              {
+                url:
+                  'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_30_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+                // 'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:pm10_atmo_street-20190121-0600UT&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+              }
+            ])
+          }
+        ],
+        config: {
+          keepExistingConfig: true,
+          version: 'v1',
+          config: {
+            visState: {
+              layers: [
+                {
+                  type: 'tile',
+                  config: {
+                    dataId: 'tile-layer-1',
+                    isVisible: true
+                  }
+                }
+              ]
+            }
+          }
+        }
+      })
+    );
+  };
+
+  _updateTileLayer(dataId, url) {
+    const config = this.getMapConfig();
+    this.props.dispatch(
+      addDataToMap({
+        datasets: [
+          {
+            info: {
+              id: dataId,
+              label: `WMTS Layer`
+            },
+            data: processRowObject([
+              {
+                url
+              }
+            ])
+          }
+        ],
+        config
+      })
+    );
   }
 
   _showBanner = () => {
