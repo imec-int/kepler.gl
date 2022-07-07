@@ -3,6 +3,9 @@ name: Node.js Package
 on:
   release:
     types: [created]
+  push: 
+    branches:
+      - tilelayer-2.5.5
 
 jobs:
   publish-npm:
