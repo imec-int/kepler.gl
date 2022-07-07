@@ -4,7 +4,8 @@ on:
   release:
     types: [created]
   push:
-    branches: [ tilelayer-2.5.5 ]
+    branches:
+      - tilelayer-2.5.5
 
 jobs:
   publish-npm:
