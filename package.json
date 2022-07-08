@@ -1,7 +1,7 @@
 {
-  "name": "kepler.gl",
-  "author": "Shan He <shan@uber.com>",
-  "version": "2.5.5",
+  "name": "@imec-int/kepler.gl",
+  "author": "imec <admin@imec-apt.be>",
+  "version": "2.5.5.1",
   "description": "kepler.gl is a webgl based application to visualize large scale location data in the browser",
   "license": "MIT",
   "main": "dist/index.js",
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/keplergl/kepler.gl.git"
+    "url": "https://github.com/imec-int/kepler.gl.git"
   },
   "scripts": {
     "install:example": "cd examples/demo-app && yarn",
@@ -279,8 +279,8 @@
     "node": ">=12.0.0"
   },
   "maintainers": [
-    "Shan He <heshan0131@gmail.com>",
-    "Giuseppe Macri <gmacri@uber.com>"
+    "Ismail K. <https://github.com/ismakutl>",
+    "Maarten T. <https://github.com/taeymma>"
   ],
   "volta": {
     "node": "12.19.0"
