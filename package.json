@@ -1,7 +1,7 @@
 {
   "name": "@imec-int/kepler.gl",
   "author": "imec <admin@imec-apt.be>",
-  "version": "2.5.5.1",
+  "version": "2.5.5-tilelayer",
   "description": "kepler.gl is a webgl based application to visualize large scale location data in the browser",
   "license": "MIT",
   "main": "dist/index.js",
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/imec-int/kepler.gl.git"
+    "url": "git://github.com/imec-int/kepler.gl.git"
   },
   "scripts": {
     "install:example": "cd examples/demo-app && yarn",
