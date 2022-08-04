@@ -45,7 +45,7 @@ import {
 import {loadCloudMap, addDataToMap, addNotification} from 'kepler.gl/actions';
 import {CLOUD_PROVIDERS} from './cloud-providers';
 
-let looper = false;
+// let looper = false;
 const KeplerGl = require('kepler.gl/components').injectComponents([
   replaceLoadDataModal(),
   replaceMapControl(),
@@ -100,7 +100,7 @@ const GlobalStyle = styled.div`
 `;
 
 class App extends Component {
-  looper = false;
+  // looper = false;
   state = {
     showBanner: false,
     width: window.innerWidth,
@@ -135,11 +135,13 @@ class App extends Component {
       this.props.dispatch(loadRemoteMap({dataUrl: query.mapUrl}));
     }
 
-    this._addTileLayer();
+    setTimeout(() => {
+      this._addTileLayer();
+    }, 10000);
 
-    this.loopLayers(
-      'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_3<timeslot>_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-    );
+    // this.loopLayers(
+    //   'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_3<timeslot>_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+    // );
 
     // delay zs to show the banner
     // if (!window.localStorage.getItem(BannerKey)) {
@@ -152,20 +154,19 @@ class App extends Component {
     // this._loadMockNotifications();
   }
 
-  loopLayers = url => {
-    setTimeout(() => {
-      console.log('update layer?', this.looper);
+  // loopLayers = url => {
+  //   setTimeout(() => {
+  //     console.log('update layer?', this.looper);
 
-      this._updateTileLayer('tile-layer-1', url.replace('<timeslot>', this.looper ? 0 : 5));
-      this.looper = !this.looper;
-      this.loopLayers(url);
-    }, 3000);
-  };
+  //     this._updateTileLayer('tile-layer-1', url.replace('<timeslot>', this.looper ? 0 : 5));
+  //     this.looper = !this.looper;
+  //     this.loopLayers(url);
+  //   }, 3000);
+  // };
 
   getMapConfig() {
     // retrieve kepler.gl store
     const {demo} = this.props;
-    console.log(this.props);
     // retrieve current kepler.gl instance store
     const {map} = demo.keplerGl;
 
@@ -179,28 +180,26 @@ class App extends Component {
         datasets: [
           {
             info: {
-              id: `tile-layer-1`,
-              label: `WMTS Layer`
+              id: `wms-layer-1`,
+              label: `WMS Layer`
             },
             data: processRowObject([
               {
                 url:
-                  'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_30_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-                // 'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:pm10_atmo_street-20190121-0600UT&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+                  'https://api.dev.bruges.odt.imec-apt.be/geoserver/bruges-dev/wms?layers=bruges-dev:pm10_atmo_street-20190121-0500UT'
               }
             ])
           }
         ],
         config: {
-          keepExistingConfig: true,
           version: 'v1',
           config: {
             visState: {
               layers: [
                 {
-                  type: 'tile',
+                  type: 'wms',
                   config: {
-                    dataId: 'tile-layer-1',
+                    dataId: 'wms-layer-1',
                     isVisible: true
                   }
                 }

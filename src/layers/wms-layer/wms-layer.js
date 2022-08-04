@@ -1,9 +1,10 @@
 import Layer from '../base-layer';
 import {TileLayer as DeckGLTileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
-import TileLayerIcon from './tile-layer-icon';
+import WMSLayerIcon from './wms-layer-icon';
+import {load} from '@loaders.gl/core';
 
-export const TileLayerVisConfigs = {
+export const WMSLayerVisConfigs = {
   opacity: 'opacity',
   thickness: 'thickness',
   colorRange: 'colorRange',
@@ -11,19 +12,19 @@ export const TileLayerVisConfigs = {
   targetColor: 'targetColor'
 };
 
-export default class TileLayer extends Layer {
+export default class WMSLayer extends Layer {
   constructor(props) {
     super(props);
 
-    this.registerVisConfig(TileLayerVisConfigs);
+    this.registerVisConfig(WMSLayerVisConfigs);
   }
 
   get type() {
-    return 'tile';
+    return 'wms';
   }
 
   get layerIcon() {
-    return TileLayerIcon;
+    return WMSLayerIcon;
   }
 
   formatLayerData(datasets, oldLayerData) {
@@ -65,14 +66,29 @@ export default class TileLayer extends Layer {
         tileSize: 512,
 
         // TODO: check if we can use this function to fetch tiles, and suppress the console errors
-        // getTileData: async tile => {
-        // const response = await fetch(tile.url);
-        // console.log(response);
-        // if (response.ok) {
-        //   return Promise.resolve(streamToBlob(response.body, 'image/png'));
-        // }
-        // return null;
-        // },
+        getTileData(tile) {
+          // const {props} = this;
+          const wmsUrl = url;
+          const {bbox} = tile;
+          const {east, north, south, west} = bbox;
+          const urlQueryStringParams = {
+            bbox: [west, south, east, north].join(','),
+            format: 'image/png',
+            height: 512,
+            request: 'GetMap',
+            service: 'WMS',
+            srs: 'EPSG:4326',
+            styles: '',
+            version: '1.1.1',
+            width: 512,
+            transparent: 'true'
+          };
+          const urlQueryString = Object.keys(urlQueryStringParams)
+            .map(key => `${key}=${urlQueryStringParams[key]}`)
+            .join('&');
+
+          return load(`${wmsUrl}&${urlQueryString}`);
+        },
 
         renderSubLayers: props => {
           const {
