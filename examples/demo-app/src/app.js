@@ -45,7 +45,7 @@ import {
 import {loadCloudMap, addDataToMap, addNotification} from 'kepler.gl/actions';
 import {CLOUD_PROVIDERS} from './cloud-providers';
 
-let looper = false;
+const looper = false;
 const KeplerGl = require('kepler.gl/components').injectComponents([
   replaceLoadDataModal(),
   replaceMapControl(),
@@ -137,9 +137,9 @@ class App extends Component {
 
     this._addTileLayer();
 
-    this.loopLayers(
-      'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_3<timeslot>_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-    );
+    // this.loopLayers(
+    //   'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_3<timeslot>_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+    // );
 
     // delay zs to show the banner
     // if (!window.localStorage.getItem(BannerKey)) {
@@ -152,15 +152,15 @@ class App extends Component {
     // this._loadMockNotifications();
   }
 
-  loopLayers = url => {
-    setTimeout(() => {
-      console.log('update layer?', this.looper);
+  // loopLayers = url => {
+  //   setTimeout(() => {
+  //     console.log('update layer?', this.looper);
 
-      this._updateTileLayer('tile-layer-1', url.replace('<timeslot>', this.looper ? 0 : 5));
-      this.looper = !this.looper;
-      this.loopLayers(url);
-    }, 3000);
-  };
+  //     this._updateTileLayer('tile-layer-1', url.replace('<timeslot>', this.looper ? 0 : 5));
+  //     this.looper = !this.looper;
+  //     this.loopLayers(url);
+  //   }, 3000);
+  // };
 
   getMapConfig() {
     // retrieve kepler.gl store
@@ -201,6 +201,37 @@ class App extends Component {
                   type: 'tile',
                   config: {
                     dataId: 'tile-layer-1',
+                    isVisible: true
+                  }
+                }
+              ]
+            }
+          }
+        }
+      })
+    );
+
+    this.props.dispatch(
+      addDataToMap({
+        datasets: [
+          {
+            info: {
+              id: `graph-layer-1`,
+              label: `Graph Layer`
+            },
+            data: processRowObject([mockData.graph])
+          }
+        ],
+        config: {
+          keepExistingConfig: true,
+          version: 'v1',
+          config: {
+            visState: {
+              layers: [
+                {
+                  type: 'graph',
+                  config: {
+                    dataId: 'graph-layer-1',
                     isVisible: true
                   }
                 }
