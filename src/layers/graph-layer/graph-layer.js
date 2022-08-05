@@ -116,7 +116,7 @@ export default class GraphLayer extends Layer {
   }
 
   shouldRenderLayer() {
-    return true;
+    return typeof this.type === 'string' && this.config.isVisible && this.hasAllColumns();
   }
 
   renderLayer(opts) {
