@@ -32,7 +32,7 @@ import {replaceMapControl} from './factories/map-control';
 import {replacePanelHeader} from './factories/panel-header';
 import {AUTH_TOKENS} from './constants/default-settings';
 import {messages} from './constants/localization';
-import {processRowObject} from '../../../src/processors/data-processor';
+import {processGraph, processRowObject} from '../../../src/processors/data-processor';
 import KeplerGlSchema from 'kepler.gl/schemas';
 
 import {
@@ -66,6 +66,110 @@ import sampleIconCsv, {config as savedMapConfig} from './data/sample-icon-csv';
 import {processCsvData, processGeojson} from 'kepler.gl/processors';
 /* eslint-enable no-unused-vars */
 
+const mockData = {
+  graph: {
+    label: '8672f0ad-ce27-488a-b477-b64a4c57be41',
+    type: 'simulation',
+    nodes: [
+      {
+        id: '1',
+        label: 'Power plant',
+        metadata: {
+          'is-a': ['room'],
+          gis: [],
+          x: 4.434661720198483,
+          y: 51.20594386351399,
+          'water-level-for-flooding-in-cm': [23],
+          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
+          event: 'flood',
+          time: 0,
+          oldState: 1,
+          newState: 5,
+          description: '"flood" at "Room 1". The state changed from "operational" to "outage".',
+          newStateName: 'outage',
+          oldStateName: 'operational'
+        }
+      },
+      {
+        id: '2',
+        label: 'Water pump',
+        metadata: {
+          'is-a': ['room'],
+          x: 4.413684631292414,
+          y: 51.230266736445024,
+          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
+          event: 'flood',
+          time: 1,
+          originator: 1,
+          oldState: 1,
+          newState: 5,
+          description:
+            '"flood" at "Room 2". fire spread via "Room 1". The state changed from "operational" to "outage".',
+          newStateName: 'outage',
+          oldStateName: 'operational'
+        }
+      },
+      {
+        id: '3',
+        label: 'Kennedy Tunnel',
+        metadata: {
+          'is-a': ['room'],
+          x: 4.371651627317661,
+          y: 51.205651742412726,
+          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
+          event: 'flood',
+          time: 2,
+          originator: 2,
+          oldState: 1,
+          newState: 5,
+          description:
+            '"flood" at "Room 3". fire spread via "Room 2". The state changed from "operational" to "majorly affected".',
+          newStateName: 'outage',
+          oldStateName: 'operational'
+        }
+      },
+      {
+        id: '4',
+        label: 'Hospital',
+        metadata: {
+          'is-a': ['room'],
+          x: 4.422055727014319,
+          y: 51.21352710975356,
+          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
+          event: 'fire',
+          time: 3,
+          originator: 1,
+          oldState: 1,
+          newState: 5,
+          description:
+            '"flood" at "Room 4". fire spread via "Room 3". The state changed from "operational" to "majorly affected".',
+          newStateName: 'outage',
+          oldStateName: 'operational'
+        }
+      }
+    ],
+    edges: [
+      {
+        label: 'Power plant - Water pump',
+        source: '1',
+        target: '2'
+      },
+      {
+        label: 'Water pump - Kennedy Tunnel',
+        source: '2',
+        target: '3'
+      },
+      {
+        label: 'Power plant - Hospital',
+        source: '1',
+        target: '4'
+      }
+    ],
+    metadata: {
+      project: 'PRECINCT'
+    }
+  }
+};
 const BannerHeight = 48;
 const BannerKey = `banner-${FormLink}`;
 const keplerGlGetState = state => state.demo.keplerGl;
@@ -174,42 +278,42 @@ class App extends Component {
   }
 
   _addTileLayer = () => {
-    this.props.dispatch(
-      addDataToMap({
-        datasets: [
-          {
-            info: {
-              id: `tile-layer-1`,
-              label: `WMTS Layer`
-            },
-            data: processRowObject([
-              {
-                url:
-                  'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_30_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-                // 'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:pm10_atmo_street-20190121-0600UT&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-              }
-            ])
-          }
-        ],
-        config: {
-          keepExistingConfig: true,
-          version: 'v1',
-          config: {
-            visState: {
-              layers: [
-                {
-                  type: 'tile',
-                  config: {
-                    dataId: 'tile-layer-1',
-                    isVisible: true
-                  }
-                }
-              ]
-            }
-          }
-        }
-      })
-    );
+    // this.props.dispatch(
+    //   addDataToMap({
+    //     datasets: [
+    //       {
+    //         info: {
+    //           id: `tile-layer-1`,
+    //           label: `WMTS Layer`
+    //         },
+    //         data: processRowObject([
+    //           {
+    //             url:
+    //               'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_30_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+    //             // 'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:pm10_atmo_street-20190121-0600UT&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+    //           }
+    //         ])
+    //       }
+    //     ],
+    //     config: {
+    //       keepExistingConfig: true,
+    //       version: 'v1',
+    //       config: {
+    //         visState: {
+    //           layers: [
+    //             {
+    //               type: 'tile',
+    //               config: {
+    //                 dataId: 'tile-layer-1',
+    //                 isVisible: true
+    //               }
+    //             }
+    //           ]
+    //         }
+    //       }
+    //     }
+    //   })
+    // );
 
     this.props.dispatch(
       addDataToMap({
@@ -219,7 +323,7 @@ class App extends Component {
               id: `graph-layer-1`,
               label: `Graph Layer`
             },
-            data: processRowObject([mockData.graph])
+            data: processGraph(mockData)
           }
         ],
         config: {
