@@ -20,7 +20,6 @@
 
 import {BrushingExtension} from '@deck.gl/extensions';
 import {IconLayer, LineLayer} from '@deck.gl/layers';
-import {getTextOffsetByRadius, formatTextLabelData} from '../layer-text-label';
 
 import Layer from '../base-layer';
 import {hexToRgb} from 'utils/color-utils';
@@ -34,9 +33,9 @@ export const iconPosAccessor = ({icon}) => dc => d => {
   }
   return {
     url: dc.valueAt(d.index, icon.fieldIdx),
-    width: 480,
-    height: 750,
-    anchorY: 750
+    width: 64,
+    height: 64,
+    anchorY: 64
   };
 };
 
@@ -261,8 +260,30 @@ export default class GraphLayer extends Layer {
     const extensions = [...defaultLayerProps.extensions, brushingExtension];
 
     return [
+      new LineLayer({
+        ...defaultLayerProps,
+        id: `edges-${defaultLayerProps.id}`,
+        idx: defaultLayerProps.idx,
+        ...brushingProps,
+        ...data,
+        data: edges,
+        parameters: {
+          // circles will be flat on the map when the altitude column is not used
+          depthTest: this.config.columns.altitude?.fieldIdx > -1
+        },
+        lineWidthUnits: 'pixels',
+        updateTriggers,
+        extensions,
+
+        getColor: [63, 152, 189],
+        getWidth: 8,
+        getSourcePosition: d => d.coordinates.from,
+        getTargetPosition: d => d.coordinates.to
+      }),
       new IconLayer({
         ...defaultLayerProps,
+        id: `nodes-${defaultLayerProps.id}`,
+        idx: defaultLayerProps.idx,
         ...brushingProps,
         // ...layerProps,
         ...data,
@@ -275,24 +296,7 @@ export default class GraphLayer extends Layer {
         extensions,
 
         // IconLayer stuff
-        getSize: 25
-      }),
-      new LineLayer({
-        ...defaultLayerProps,
-        ...brushingProps,
-        ...data,
-        data: edges,
-        parameters: {
-          // circles will be flat on the map when the altitude column is not used
-          depthTest: this.config.columns.altitude?.fieldIdx > -1
-        },
-        lineWidthUnits: 'pixels',
-        updateTriggers,
-        extensions,
-
-        getWidth: 25,
-        getSourcePosition: d => d.coordinates.from,
-        getTargetPosition: d => d.coordinates.to
+        getSize: 32
       })
     ];
   }
