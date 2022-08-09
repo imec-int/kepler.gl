@@ -44,10 +44,15 @@ export const pointPosAccessor = ({coordinates, type}) => dc => d => {
 
 const brushingExtension = new BrushingExtension();
 
+export const pointVisConfigs = {
+  opacity: 'opacity'
+};
+
 export default class GraphLayer extends Layer {
   constructor(props) {
     super(props);
 
+    this.registerVisConfig(pointVisConfigs);
     this.getPositionAccessor = dataContainer => {
       return pointPosAccessor(this.config.columns)(dataContainer);
     };
@@ -229,7 +234,7 @@ export default class GraphLayer extends Layer {
       objectHovered
     } = opts;
 
-    console.log(nodes, edges);
+    console.log(nodes, edges, data);
 
     const fixedRadius = this.config.visConfig.fixedRadius && Boolean(this.config.sizeField);
     const radiusScale = this.getRadiusScaleByZoom(mapState, fixedRadius);
@@ -284,24 +289,24 @@ export default class GraphLayer extends Layer {
           anchorY: 750
         }),
         getSize: 25
-      })
-      // new LineLayer({
-      //   ...defaultLayerProps,
-      //   ...brushingProps,
-      //   ...data,
-      //   data: edges,
-      //   parameters: {
-      //     // circles will be flat on the map when the altitude column is not used
-      //     depthTest: this.config.columns.altitude?.fieldIdx > -1
-      //   },
-      //   lineWidthUnits: 'pixels',
-      //   updateTriggers,
-      //   extensions,
+      }),
+      new LineLayer({
+        ...defaultLayerProps,
+        ...brushingProps,
+        ...data,
+        data: edges,
+        parameters: {
+          // circles will be flat on the map when the altitude column is not used
+          depthTest: this.config.columns.altitude?.fieldIdx > -1
+        },
+        lineWidthUnits: 'pixels',
+        updateTriggers,
+        extensions,
 
-      //   getWidth: 25,
-      //   getSourcePosition: d => d.coordinates.from,
-      //   getTargetPosition: d => d.coordinates.to
-      // })
+        getWidth: 25,
+        getSourcePosition: d => d.coordinates.from,
+        getTargetPosition: d => d.coordinates.to
+      })
     ];
   }
 }
