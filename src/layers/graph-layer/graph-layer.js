@@ -28,6 +28,18 @@ import {findDefaultColorField} from 'utils/dataset-utils';
 import GraphLayerIcon from './graph-layer-icon';
 import {DEFAULT_LAYER_COLOR} from 'constants/default-settings';
 
+export const iconPosAccessor = ({icon}) => dc => d => {
+  if (!icon) {
+    return null;
+  }
+  return {
+    url: dc.valueAt(d.index, icon.fieldIdx),
+    width: 480,
+    height: 750,
+    anchorY: 750
+  };
+};
+
 export const pointPosAccessor = ({coordinates, type}) => dc => d => {
   if (!type || !coordinates) {
     return null;
@@ -55,6 +67,9 @@ export default class GraphLayer extends Layer {
     this.registerVisConfig(pointVisConfigs);
     this.getPositionAccessor = dataContainer => {
       return pointPosAccessor(this.config.columns)(dataContainer);
+    };
+    this.getIconAccessor = dataContainer => {
+      return iconPosAccessor(this.config.columns)(dataContainer);
     };
   }
 
@@ -128,9 +143,10 @@ export default class GraphLayer extends Layer {
     };
   }
 
+  // Calculates the column index for all fields which require to be searched
   calculateFieldsToColumns(fields) {
     const columns = {};
-    const fieldsToMap = ['coordinates', 'type'];
+    const fieldsToMap = ['coordinates', 'type', 'icon'];
 
     fieldsToMap.forEach(name => {
       const field = fields.find(({id}) => id === name);
@@ -203,6 +219,7 @@ export default class GraphLayer extends Layer {
     const {gpuFilter, dataContainer} = datasets[this.config.dataId];
     const {data} = this.updateData(datasets, oldLayerData);
     const getPosition = this.getPositionAccessor(dataContainer);
+    const getIcon = this.getIconAccessor(dataContainer);
 
     const accessors = this.getAttributeAccessors({dataContainer});
     const nodes = data.filter(d => d.type === 'node');
@@ -213,6 +230,7 @@ export default class GraphLayer extends Layer {
       nodes,
       edges,
       getPosition,
+      getIcon,
       getFilterValue: gpuFilter.filterValueAccessor(dataContainer)(),
       ...accessors
     };
@@ -229,23 +247,8 @@ export default class GraphLayer extends Layer {
       // eslint-disable-next-line no-unused-vars
       data: {data: not_in_use, nodes, edges, ...data},
       gpuFilter,
-      interactionConfig,
-      mapState,
-      objectHovered
+      interactionConfig
     } = opts;
-
-    console.log(nodes, edges, data);
-
-    const fixedRadius = this.config.visConfig.fixedRadius && Boolean(this.config.sizeField);
-    const radiusScale = this.getRadiusScaleByZoom(mapState, fixedRadius);
-
-    const layerProps = {
-      stroked: this.config.visConfig.outline,
-      filled: this.config.visConfig.filled,
-      lineWidthScale: this.config.visConfig.thickness,
-      radiusScale,
-      ...(this.config.visConfig.fixedRadius ? {} : {radiusMaxPixels: 500})
-    };
 
     const updateTriggers = {
       getPosition: this.config.columns,
@@ -255,17 +258,7 @@ export default class GraphLayer extends Layer {
 
     const defaultLayerProps = this.getDefaultDeckLayerProps(opts);
     const brushingProps = this.getBrushingExtensionProps(interactionConfig);
-    const getPixelOffset = getTextOffsetByRadius(radiusScale, data.getRadius, mapState);
     const extensions = [...defaultLayerProps.extensions, brushingExtension];
-
-    const sharedProps = {
-      getFilterValue: data.getFilterValue,
-      extensions,
-      filterRange: defaultLayerProps.filterRange,
-      visible: defaultLayerProps.visible,
-      ...brushingProps
-    };
-    const hoveredObject = this.hasHoveredObject(objectHovered);
 
     return [
       new IconLayer({
@@ -282,12 +275,6 @@ export default class GraphLayer extends Layer {
         extensions,
 
         // IconLayer stuff
-        getIcon: _ => ({
-          url: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
-          width: 480,
-          height: 750,
-          anchorY: 750
-        }),
         getSize: 25
       }),
       new LineLayer({
