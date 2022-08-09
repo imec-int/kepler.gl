@@ -57,7 +57,7 @@ export default class WMSLayer extends Layer {
     const {data} = opts;
     const {url} = data;
 
-    // Create new deck.gl Tile Layer with Bitmap sublayers
+    // Create new deck.gl WMS Layer with Bitmap sublayers
     return [
       new DeckGLTileLayer({
         data: url,
@@ -78,7 +78,7 @@ export default class WMSLayer extends Layer {
             request: 'GetMap',
             service: 'WMS',
             srs: 'EPSG:4326',
-            styles: '',
+            styles: 'bruges-dev:BelAQI-raster-style',
             version: '1.1.1',
             width: 512,
             transparent: 'true'
