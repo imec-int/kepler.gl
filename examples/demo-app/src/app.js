@@ -80,7 +80,7 @@ const mockData = {
           x: 4.434661720198483,
           y: 51.20594386351399,
           'water-level-for-flooding-in-cm': [23],
-          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
+          icon: 'https://cdne-cities-assets.azureedge.net/precinct/marker.png',
           event: 'flood',
           time: 0,
           oldState: 1,
