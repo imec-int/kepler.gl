@@ -31,6 +31,8 @@ export const iconPosAccessor = ({icon}) => dc => d => {
   if (!icon) {
     return null;
   }
+
+  // TODO: These dimensions are hardcoded as a temporary solution. We should have a set of fixed icons, or add the dimensions to the graph definition.
   return {
     url: dc.valueAt(d.index, icon.fieldIdx),
     width: 64,
