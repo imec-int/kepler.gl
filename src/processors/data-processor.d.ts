@@ -11,6 +11,7 @@ export function processGeojson(rawData: object): ProcessorResult;
 export function processCsvData(rawData: string | any[][], header?: string[]): ProcessorResult;
 export function processKeplerglJSON(rawData: SavedMap): ProcessorResult;
 export function processRowObject(rawData: object[]): ProcessorResult;
+export function processGraph(rawData: object): ProcessorResult;
 export function processKeplerglDataset(
   rawData: object | object[]
 ): ParsedDataset | ParsedDataset[] | null;
@@ -47,6 +48,7 @@ export const Processors: {
   processGeojson: typeof processGeojson;
   processCsvData: typeof processCsvData;
   processRowObject: typeof processRowObject;
+  processGraph: typeof processGraph;
   processKeplerglJSON: typeof processKeplerglJSON;
   processKeplerglDataset: typeof processKeplerglDataset;
   analyzerTypeToFieldType: typeof analyzerTypeToFieldType;

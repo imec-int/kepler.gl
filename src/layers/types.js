@@ -34,5 +34,6 @@ export const LAYER_TYPES = keyMirror({
   '3D': null,
   trip: null,
   s2: null,
-  tile: null
+  tile: null,
+  graph: null
 });

@@ -102,6 +102,7 @@ export type LayerClassesType = {
   trip: Layer;
   s2: Layer;
   tile: Layer;
+  graph: Layer;
 };
 export const LayerClasses: LayerClassesType;
 
