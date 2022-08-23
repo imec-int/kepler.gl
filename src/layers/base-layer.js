@@ -740,16 +740,7 @@ class Layer {
     }
     if (colorScale === 'belaqi') {
       console.log('BELAQI', {colorScale, colorDomain, colorRange});
-      // TODO: domain should come from the config
-      // const scaleFn = scaleThreshold()
-      //   .domain([5, 10, 15, 25, 35, 40, 50, 60, 70])
-      //   .range(colorRange.colors);
-      return this.getVisChannelScale(
-        'belaqi',
-        [5, 10, 15, 25, 35, 40, 50, 60, 70],
-        colorRange.colors.map(hexToRgb)
-      );
-      // return scale;
+      return this.getVisChannelScale('belaqi', colorRange.ranges, colorRange.colors.map(hexToRgb));
     }
     return this.getVisChannelScale(colorScale, colorDomain, colorRange.colors.map(hexToRgb));
   }
