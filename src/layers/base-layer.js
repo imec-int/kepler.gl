@@ -857,11 +857,6 @@ class Layer {
     nullValue = NO_VALUE_COLOR,
     getValue = defaultGetFieldValue
   ) {
-    // console.log('🚀 ~ file: base-layer.js ~ line 862 ~ getValue', getValue);
-    // console.log('🚀 ~ file: base-layer.js ~ line 862 ~ nullValue', nullValue);
-    // console.log('🚀 ~ file: base-layer.js ~ line 862 ~ field', field);
-    // console.log('🚀 ~ file: base-layer.js ~ line 862 ~ data', data);
-    // console.log('🚀 ~ file: base-layer.js ~ line 862 ~ scale', scale);
     const {type} = field;
     const value = getValue(field, data);
 
@@ -876,9 +871,6 @@ class Layer {
       attributeValue = scale(new Date(value));
     } else {
       attributeValue = scale(value);
-      // console.log('🚀 ~ file: base-layer.js ~ line 888 ~ attributeValue', {
-      //   [value]: attributeValue
-      // });
     }
 
     if (!notNullorUndefined(attributeValue)) {
