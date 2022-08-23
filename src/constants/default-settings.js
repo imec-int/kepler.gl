@@ -28,7 +28,8 @@ import {
   scaleOrdinal,
   scaleSqrt,
   scaleLog,
-  scalePoint
+  scalePoint,
+  scaleThreshold
 } from 'd3-scale';
 import {
   Layers,
@@ -321,7 +322,7 @@ export const SCALE_FUNC = {
   [SCALE_TYPES.log]: scaleLog,
   [SCALE_TYPES.point]: scalePoint,
   // belaqi
-  [SCALE_TYPES.belaqi]: scaleQuantize
+  [SCALE_TYPES.belaqi]: scaleThreshold
 };
 
 export const ALL_FIELD_TYPES = keyMirror({

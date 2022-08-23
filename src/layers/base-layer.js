@@ -426,6 +426,7 @@ class Layer {
     if (!object) {
       return null;
     }
+
     // By default, each entry of layerData should have an index of a row in the original data container.
     // Each layer can implement its own getHoverData method
     return dataContainer.row(object.index);
@@ -719,7 +720,7 @@ class Layer {
   }
 
   getColorScale(colorScale, colorDomain, colorRange) {
-    console.log('🚀 ~ file: base-layer.js ~ line 722 ~ -------------- getColorScale', {
+    console.log('🚀 ~ file: base-layer.js ~ line 722 ~ --- getColorScale', {
       colorScale,
       colorDomain,
       colorRange
@@ -739,14 +740,19 @@ class Layer {
     }
     if (colorScale === 'belaqi') {
       console.log('BELAQI', {colorScale, colorDomain, colorRange});
-      // return getBelaqi()
+      // TODO: domain should come from the config
+      // const scaleFn = scaleThreshold()
+      //   .domain([5, 10, 15, 25, 35, 40, 50, 60, 70])
+      //   .range(colorRange.colors);
+      return this.getVisChannelScale(
+        'belaqi',
+        [5, 10, 15, 25, 35, 40, 50, 60, 70],
+        colorRange.colors.map(hexToRgb)
+      );
+      // return scale;
     }
     return this.getVisChannelScale(colorScale, colorDomain, colorRange.colors.map(hexToRgb));
   }
-
-  // getBelaqi() {
-  //   return
-  // }
 
   /**
    * Mapping from visual channels to deck.gl accesors
@@ -756,7 +762,6 @@ class Layer {
    * @return {Object} attributeAccessors - deck.gl layer attribute accessors
    */
   getAttributeAccessors({dataAccessor = defaultDataAccessor, dataContainer}) {
-    console.log('🚀 ~ file: base-layer.js ~ line 752 ~ getAttributeAccessors');
     const attributeAccessors = {};
 
     Object.keys(this.visualChannels).forEach(channel => {
@@ -778,8 +783,6 @@ class Layer {
       if (shouldGetScale) {
         const args = [this.config[scale], this.config[domain], this.config.visConfig[range]];
         const isFixed = fixed && this.config.visConfig[fixed];
-        console.log(channelScaleType === CHANNEL_SCALES.color ? 'yes' : 'no');
-        console.log('🚀 ~ file: base-layer.js ~ line 776 ~ CHANNEL_SCALES', CHANNEL_SCALES);
         let scaleFunction;
         if (channelScaleType === CHANNEL_SCALES.color) {
           scaleFunction = this.getColorScale(...args);
@@ -820,7 +823,6 @@ class Layer {
     const scaleFunc = SCALE_FUNC[fixed ? 'linear' : scale]()
       .domain(domain)
       .range(fixed ? domain : range);
-    console.log('🚀 ~ file: base-layer.js ~ line 809 ~ scaleFunc', scaleFunc);
     return scaleFunc;
   }
 
@@ -883,6 +885,9 @@ class Layer {
       attributeValue = scale(new Date(value));
     } else {
       attributeValue = scale(value);
+      // console.log('🚀 ~ file: base-layer.js ~ line 888 ~ attributeValue', {
+      //   [value]: attributeValue
+      // });
     }
 
     if (!notNullorUndefined(attributeValue)) {
