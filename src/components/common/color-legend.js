@@ -88,7 +88,7 @@ const getQuantLegends = (scale, labelFormat) => {
       labels: []
     };
   }
-
+  console.log('🚀 ~ file: color-legend.js ~ line 93 ~ scale.domain()', scale.domain());
   const labels = scale.range().map(d => {
     const invert = scale.invertExtent(d);
     return `${labelFormat(invert[0])} to ${labelFormat(invert[1])}`;
@@ -146,10 +146,16 @@ export default class ColorLegend extends Component {
         }
 
         const scaleFunction = SCALE_FUNC[scaleType];
+        console.log('🚀 ~ file: color-legend.js ~ line 150 ~ scaleType', scaleType);
+        console.log(
+          '🚀 ~ file: color-legend.js ~ line 150 ~ SCALE_FUNC[scaleType]',
+          SCALE_FUNC[scaleType]
+        );
         // color scale can only be quantize, quantile or ordinal
         // @ts-ignore fix d3 scale
+        // TODO: domain should come from the config
         const scale = scaleFunction()
-          .domain(domain)
+          .domain([5, 10, 15, 25, 35, 40, 50, 60, 70])
           .range(range.colors);
 
         if (scaleType === SCALE_TYPES.ordinal) {
@@ -157,7 +163,6 @@ export default class ColorLegend extends Component {
         }
 
         const formatLabel = labelFormat || getQuantLabelFormat(scale.domain(), fieldType);
-
         return getQuantLegends(scale, formatLabel);
       }
       return empty;

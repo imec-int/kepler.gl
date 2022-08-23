@@ -426,7 +426,6 @@ class Layer {
     if (!object) {
       return null;
     }
-
     // By default, each entry of layerData should have an index of a row in the original data container.
     // Each layer can implement its own getHoverData method
     return dataContainer.row(object.index);
@@ -650,6 +649,7 @@ class Layer {
     const {colorUI, visConfig} = this.config;
     const {steps, reversed} = colorUI[prop].colorRangeConfig;
     const colorRange = visConfig[prop];
+
     // find based on step or reversed
     let update;
     if (newConfig.colorRangeConfig.hasOwnProperty('steps')) {
@@ -719,6 +719,11 @@ class Layer {
   }
 
   getColorScale(colorScale, colorDomain, colorRange) {
+    console.log('🚀 ~ file: base-layer.js ~ line 722 ~ -------------- getColorScale', {
+      colorScale,
+      colorDomain,
+      colorRange
+    });
     if (Array.isArray(colorRange.colorMap)) {
       const cMap = new Map();
       colorRange.colorMap.forEach(([k, v]) => {
@@ -732,9 +737,16 @@ class Layer {
         .unknown(cMap.get(UNKNOWN_COLOR_KEY) || NO_VALUE_COLOR);
       return scale;
     }
-
+    if (colorScale === 'belaqi') {
+      console.log('BELAQI', {colorScale, colorDomain, colorRange});
+      // return getBelaqi()
+    }
     return this.getVisChannelScale(colorScale, colorDomain, colorRange.colors.map(hexToRgb));
   }
+
+  // getBelaqi() {
+  //   return
+  // }
 
   /**
    * Mapping from visual channels to deck.gl accesors
@@ -744,6 +756,7 @@ class Layer {
    * @return {Object} attributeAccessors - deck.gl layer attribute accessors
    */
   getAttributeAccessors({dataAccessor = defaultDataAccessor, dataContainer}) {
+    console.log('🚀 ~ file: base-layer.js ~ line 752 ~ getAttributeAccessors');
     const attributeAccessors = {};
 
     Object.keys(this.visualChannels).forEach(channel => {
@@ -765,11 +778,14 @@ class Layer {
       if (shouldGetScale) {
         const args = [this.config[scale], this.config[domain], this.config.visConfig[range]];
         const isFixed = fixed && this.config.visConfig[fixed];
-
-        const scaleFunction =
-          channelScaleType === CHANNEL_SCALES.color
-            ? this.getColorScale(...args)
-            : this.getVisChannelScale(...args, isFixed);
+        console.log(channelScaleType === CHANNEL_SCALES.color ? 'yes' : 'no');
+        console.log('🚀 ~ file: base-layer.js ~ line 776 ~ CHANNEL_SCALES', CHANNEL_SCALES);
+        let scaleFunction;
+        if (channelScaleType === CHANNEL_SCALES.color) {
+          scaleFunction = this.getColorScale(...args);
+        } else {
+          scaleFunction = this.getVisChannelScale(...args, isFixed);
+        }
 
         attributeAccessors[accessor] = d =>
           this.getEncodedChannelValue(
@@ -789,15 +805,23 @@ class Layer {
         Console.warn(`Failed to provide accessor function for ${accessor || channel}`);
       }
     });
-
     return attributeAccessors;
   }
 
   getVisChannelScale(scale, domain, range, fixed) {
+    console.log('🚀 ~ file: base-layer.js ~ line 802 ~ getVisChannelScale', {
+      scale,
+      domain,
+      range,
+      fixed
+    });
+
     // @ts-ignore d3-scale type
-    return SCALE_FUNC[fixed ? 'linear' : scale]()
+    const scaleFunc = SCALE_FUNC[fixed ? 'linear' : scale]()
       .domain(domain)
       .range(fixed ? domain : range);
+    console.log('🚀 ~ file: base-layer.js ~ line 809 ~ scaleFunc', scaleFunc);
+    return scaleFunc;
   }
 
   /**
@@ -840,6 +864,11 @@ class Layer {
     nullValue = NO_VALUE_COLOR,
     getValue = defaultGetFieldValue
   ) {
+    // console.log('🚀 ~ file: base-layer.js ~ line 862 ~ getValue', getValue);
+    // console.log('🚀 ~ file: base-layer.js ~ line 862 ~ nullValue', nullValue);
+    // console.log('🚀 ~ file: base-layer.js ~ line 862 ~ field', field);
+    // console.log('🚀 ~ file: base-layer.js ~ line 862 ~ data', data);
+    // console.log('🚀 ~ file: base-layer.js ~ line 862 ~ scale', scale);
     const {type} = field;
     const value = getValue(field, data);
 
