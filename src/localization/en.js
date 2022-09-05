@@ -105,6 +105,7 @@ export default {
     '3DModelOptions': '3D Model Options',
     type: {
       point: 'point',
+      graph: 'graph',
       arc: 'arc',
       line: 'line',
       grid: 'grid',

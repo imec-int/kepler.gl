@@ -26,6 +26,7 @@ import {hexToRgb} from 'utils/color-utils';
 import {findDefaultColorField} from 'utils/dataset-utils';
 import GraphLayerIcon from './graph-layer-icon';
 import {DEFAULT_LAYER_COLOR} from 'constants/default-settings';
+import {LAYER_VIS_CONFIGS} from 'layers/layer-factory';
 
 export const iconPosAccessor = ({icon}) => dc => d => {
   if (!icon) {
@@ -41,7 +42,7 @@ export const iconPosAccessor = ({icon}) => dc => d => {
   };
 };
 
-export const pointPosAccessor = ({coordinates, type}) => dc => d => {
+export const edgePosAccessor = ({coordinates, type}) => dc => d => {
   if (!type || !coordinates) {
     return null;
   }
@@ -57,7 +58,7 @@ export const pointPosAccessor = ({coordinates, type}) => dc => d => {
 
 const brushingExtension = new BrushingExtension();
 
-export const pointVisConfigs = {
+export const graphVisConfigs = {
   opacity: 'opacity',
   strokeColor: 'strokeColor',
   colorRange: 'colorRange'
@@ -67,13 +68,17 @@ export default class GraphLayer extends Layer {
   constructor(props) {
     super(props);
 
-    this.registerVisConfig(pointVisConfigs);
+    this.registerVisConfig(graphVisConfigs);
     this.getPositionAccessor = dataContainer => {
-      return pointPosAccessor(this.config.columns)(dataContainer);
+      return edgePosAccessor(this.config.columns)(dataContainer);
     };
     this.getIconAccessor = dataContainer => {
       return iconPosAccessor(this.config.columns)(dataContainer);
     };
+  }
+
+  get name() {
+    return 'Graph';
   }
 
   get type() {
@@ -103,41 +108,6 @@ export default class GraphLayer extends Layer {
     }
 
     return this;
-  }
-
-  static findDefaultLayerProps({fieldPairs = []}) {
-    const props = [];
-
-    // Make layer for each pair
-    fieldPairs.forEach(pair => {
-      const latField = pair.pair.lat;
-      const lngField = pair.pair.lng;
-      const layerName = pair.defaultName;
-
-      const prop = {
-        label: layerName.length ? layerName : 'Point'
-      };
-
-      // default layer color for begintrip and dropoff point
-      if (latField.value in DEFAULT_LAYER_COLOR) {
-        prop.color = hexToRgb(DEFAULT_LAYER_COLOR[latField.value]);
-      }
-
-      // set the first layer to be visible
-      if (props.length === 0) {
-        prop.isVisible = true;
-      }
-
-      prop.columns = {
-        lat: latField,
-        lng: lngField,
-        altitude: {value: null, fieldIdx: -1, optional: true}
-      };
-
-      props.push(prop);
-    });
-
-    return {props};
   }
 
   getDefaultLayerConfig(props = {}) {
