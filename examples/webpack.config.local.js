@@ -104,6 +104,7 @@ function makeLocalDevConfig(env, EXAMPLE_DIR = LIB_DIR, externals = {}) {
   return {
     // suppress warnings about bundle size
     devServer: {
+      port: 3000,
       historyApiFallback: true,
       stats: {
         warnings: false

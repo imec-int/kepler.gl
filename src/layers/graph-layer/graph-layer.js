@@ -58,7 +58,9 @@ export const pointPosAccessor = ({coordinates, type}) => dc => d => {
 const brushingExtension = new BrushingExtension();
 
 export const pointVisConfigs = {
-  opacity: 'opacity'
+  opacity: 'opacity',
+  strokeColor: 'strokeColor',
+  colorRange: 'colorRange'
 };
 
 export default class GraphLayer extends Layer {
