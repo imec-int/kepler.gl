@@ -45,7 +45,6 @@ import {
 import {loadCloudMap, addDataToMap, addNotification} from 'kepler.gl/actions';
 import {CLOUD_PROVIDERS} from './cloud-providers';
 
-// const looper = false;
 const KeplerGl = require('kepler.gl/components').injectComponents([
   replaceLoadDataModal(),
   replaceMapControl(),
@@ -205,7 +204,6 @@ const GlobalStyle = styled.div`
 `;
 
 class App extends Component {
-  // looper = false;
   state = {
     showBanner: false,
     width: window.innerWidth,
@@ -240,31 +238,12 @@ class App extends Component {
       this.props.dispatch(loadRemoteMap({dataUrl: query.mapUrl}));
     }
 
-    // this.loopLayers(
-    //   'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_3<timeslot>_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-    // );
-
-    // delay zs to show the banner
-    // if (!window.localStorage.getItem(BannerKey)) {
-    //   window.setTimeout(this._showBanner, 3000);
-    // }
-
     // load sample data
     this._loadSampleData();
 
     // Notifications
     // this._loadMockNotifications();
   }
-
-  // loopLayers = url => {
-  //   setTimeout(() => {
-  //     console.log('update layer?', this.looper);
-
-  //     this._updateTileLayer('tile-layer-1', url.replace('<timeslot>', this.looper ? 0 : 5));
-  //     this.looper = !this.looper;
-  //     this.loopLayers(url);
-  //   }, 3000);
-  // };
 
   getMapConfig() {
     // retrieve kepler.gl store
