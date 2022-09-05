@@ -58,7 +58,9 @@ export const pointPosAccessor = ({coordinates, type}) => dc => d => {
 const brushingExtension = new BrushingExtension();
 
 export const pointVisConfigs = {
-  opacity: 'opacity'
+  opacity: 'opacity',
+  strokeColor: 'strokeColor',
+  colorRange: 'colorRange'
 };
 
 export default class GraphLayer extends Layer {
@@ -223,6 +225,7 @@ export default class GraphLayer extends Layer {
     const getIcon = this.getIconAccessor(dataContainer);
 
     const accessors = this.getAttributeAccessors({dataContainer});
+    console.log('🚀 ~ file: graph-layer.js ~ line 230 ~ accessors', accessors);
     const nodes = data.filter(d => d.type === 'node');
     const edges = data.filter(d => d.type === 'edge');
 
