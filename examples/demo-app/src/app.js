@@ -63,8 +63,8 @@ import sampleAnimateTrip from './data/sample-animate-trip-data';
 import sampleIconCsv, {config as savedMapConfig} from './data/sample-icon-csv';
 
 import {processCsvData, processGeojson} from 'kepler.gl/processors';
-/* eslint-enable no-unused-vars */
 
+/* eslint-enable no-unused-vars */
 const mockData = {
   graph: {
     label: '8672f0ad-ce27-488a-b477-b64a4c57be41',
@@ -170,6 +170,8 @@ const mockData = {
   }
 };
 
+// const mockGeoJson = require('./mock-geojson.json');
+
 const BannerHeight = 48;
 const BannerKey = `banner-${FormLink}`;
 const keplerGlGetState = state => state.demo.keplerGl;
@@ -238,8 +240,10 @@ class App extends Component {
       this.props.dispatch(loadRemoteMap({dataUrl: query.mapUrl}));
     }
 
+    // this._loadBelAQI();
+
     // load sample data
-    this._loadSampleData();
+    // this._loadSampleData();
 
     // Notifications
     // this._loadMockNotifications();
@@ -254,6 +258,71 @@ class App extends Component {
     // create the config object
     return KeplerGlSchema.getConfigToSave(map);
   }
+
+  // _loadBelAQI = () => {
+  //   this.props.dispatch(
+  //     addDataToMap({
+  //       datasets: [
+  //         {
+  //           info: {
+  //             id: 'belaqi-layer',
+  //             label: 'test-belaqi'
+  //           },
+  //           data: processGeojson(mockGeoJson)
+  //         }
+  //       ],
+  //       config: {
+  //         keepExistingConfig: true,
+  //         version: 'v1',
+  //         config: {
+  //           visState: {
+  //             layers: [
+  //               {
+  //                 type: 'geojson',
+  //                 config: {
+  //                   dataId: 'belaqi-layer',
+  //                   columns: {
+  //                     geojson: '_geojson'
+  //                   },
+  //                   isVisible: true,
+  //                   visConfig: {
+  //                     colorRange: {
+  //                       name: 'BelAQI (PM2.5)',
+  //                       type: 'standard',
+  //                       category: 'BelAQI',
+  //                       ranges: [5, 10, 15, 25, 35, 40, 50, 60, 70, 999],
+  //                       colors: [
+  //                         '#1c00ff',
+  //                         '#3599ff',
+  //                         '#2b9900',
+  //                         '#4dff01',
+  //                         '#fdff00',
+  //                         '#f9bb02',
+  //                         '#f66600',
+  //                         '#f50b00',
+  //                         '#990400',
+  //                         '#660200'
+  //                       ],
+  //                       reversed: false
+  //                     },
+  //                     stroked: false
+  //                   }
+  //                 },
+  //                 visualChannels: {
+  //                   colorField: {
+  //                     name: 'value',
+  //                     type: 'real'
+  //                   },
+  //                   colorScale: 'treshold'
+  //                 }
+  //               }
+  //             ]
+  //           }
+  //         }
+  //       }
+  //     })
+  //   );
+  // };
 
   _addTileLayer = () => {
     this.props.dispatch(

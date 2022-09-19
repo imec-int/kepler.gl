@@ -329,6 +329,7 @@ class KeplerTable {
         return getOrdinalDomain(dataContainer, valueAccessor);
 
       case SCALE_TYPES.quantile:
+      case SCALE_TYPES.treshold:
         return getQuantileDomain(filteredIndexForDomain, indexValueAccessor, sortFunction);
 
       case SCALE_TYPES.log:
