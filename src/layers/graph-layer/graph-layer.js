@@ -61,7 +61,11 @@ const brushingExtension = new BrushingExtension();
 export const graphVisConfigs = {
   opacity: 'opacity',
   strokeColor: 'strokeColor',
-  colorRange: 'colorRange'
+  colorRange: 'colorRange',
+  strokeColorRange: 'strokeColorRange',
+  sizeRange: 'strokeWidthRange',
+  radiusRange: 'radiusRange',
+  heightRange: 'elevationRange'
 };
 
 export default class GraphLayer extends Layer {
