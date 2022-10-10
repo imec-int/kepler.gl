@@ -54,6 +54,7 @@ const KeplerGl = require('kepler.gl/components').injectComponents([
 // Sample data
 /* eslint-disable no-unused-vars */
 import sampleTripData, {testCsvData, sampleTripDataConfig} from './data/sample-trip-data';
+import sampleJsonGraph from './data/sample-json-graph';
 import sampleGeojson from './data/sample-small-geojson';
 import sampleGeojsonPoints from './data/sample-geojson-points';
 import sampleGeojsonConfig from './data/sample-geojson-config';
@@ -63,112 +64,6 @@ import sampleAnimateTrip from './data/sample-animate-trip-data';
 import sampleIconCsv, {config as savedMapConfig} from './data/sample-icon-csv';
 
 import {processCsvData, processGeojson} from 'kepler.gl/processors';
-/* eslint-enable no-unused-vars */
-
-const mockData = {
-  graph: {
-    label: '8672f0ad-ce27-488a-b477-b64a4c57be41',
-    type: 'simulation',
-    nodes: [
-      {
-        id: '1',
-        label: 'Power plant',
-        metadata: {
-          'is-a': ['room'],
-          gis: [],
-          x: 4.434661720198483,
-          y: 51.20594386351399,
-          'water-level-for-flooding-in-cm': [23],
-          icon: 'https://cdne-cities-assets.azureedge.net/precinct/marker.png',
-          event: 'flood',
-          time: 0,
-          oldState: 1,
-          newState: 5,
-          description: '"flood" at "Room 1". The state changed from "operational" to "outage".',
-          newStateName: 'outage',
-          oldStateName: 'operational'
-        }
-      },
-      {
-        id: '2',
-        label: 'Water pump',
-        metadata: {
-          'is-a': ['room'],
-          x: 4.413684631292414,
-          y: 51.230266736445024,
-          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
-          event: 'flood',
-          time: 1,
-          originator: 1,
-          oldState: 1,
-          newState: 5,
-          description:
-            '"flood" at "Room 2". fire spread via "Room 1". The state changed from "operational" to "outage".',
-          newStateName: 'outage',
-          oldStateName: 'operational'
-        }
-      },
-      {
-        id: '3',
-        label: 'Kennedy Tunnel',
-        metadata: {
-          'is-a': ['room'],
-          x: 4.371651627317661,
-          y: 51.205651742412726,
-          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
-          event: 'flood',
-          time: 2,
-          originator: 2,
-          oldState: 1,
-          newState: 5,
-          description:
-            '"flood" at "Room 3". fire spread via "Room 2". The state changed from "operational" to "majorly affected".',
-          newStateName: 'outage',
-          oldStateName: 'operational'
-        }
-      },
-      {
-        id: '4',
-        label: 'Hospital',
-        metadata: {
-          'is-a': ['room'],
-          x: 4.422055727014319,
-          y: 51.21352710975356,
-          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
-          event: 'fire',
-          time: 3,
-          originator: 1,
-          oldState: 1,
-          newState: 5,
-          description:
-            '"flood" at "Room 4". fire spread via "Room 3". The state changed from "operational" to "majorly affected".',
-          newStateName: 'outage',
-          oldStateName: 'operational'
-        }
-      }
-    ],
-    edges: [
-      {
-        label: 'Power plant - Water pump',
-        source: '1',
-        target: '2'
-      },
-      {
-        label: 'Water pump - Kennedy Tunnel',
-        source: '2',
-        target: '3'
-      },
-      {
-        label: 'Power plant - Hospital',
-        source: '1',
-        target: '4'
-      }
-    ],
-    metadata: {
-      project: 'PRECINCT'
-    }
-  }
-};
 
 const BannerHeight = 48;
 const BannerKey = `banner-${FormLink}`;
@@ -240,9 +135,6 @@ class App extends Component {
 
     // load sample data
     this._loadSampleData();
-
-    // Notifications
-    // this._loadMockNotifications();
   }
 
   getMapConfig() {
@@ -254,6 +146,108 @@ class App extends Component {
     // create the config object
     return KeplerGlSchema.getConfigToSave(map);
   }
+
+  _loadSampleData() {
+    // this._loadPointData();
+    // this._loadGeojsonData();
+    // this._loadTripGeoJson();
+    // this._loadGraphLayer();
+    // this._loadIconData();
+    // this._loadH3HexagonData();
+    this._loadH3HData();
+    // this._loadS2Data();
+    // this._loadScenegraphLayer();
+    // this._loadBelAQI();
+    // Notifications
+    // this._loadMockNotifications();
+  }
+
+  async _loadH3HData() {
+    const data = await fetch(
+      'https://cdne-cities-assets.azureedge.net/urbanage/hex_gent_8.json'
+    ).then(res => res.json());
+    this.props.dispatch(
+      addDataToMap({
+        datasets: [
+          {
+            info: {
+              label: 'H3 Hexagons V2',
+              id: 'h3-hex-id'
+            },
+            data: processRowObject(data)
+          }
+        ],
+        options: {
+          keepExistingConfig: true
+        }
+      })
+    );
+  }
+
+  // _loadBelAQI = () => {
+  //   this.props.dispatch(
+  //     addDataToMap({
+  //       datasets: [
+  //         {
+  //           info: {
+  //             id: 'belaqi-layer',
+  //             label: 'test-belaqi'
+  //           },
+  //           data: processGeojson(mockGeoJson)
+  //         }
+  //       ],
+  //       config: {
+  //         keepExistingConfig: true,
+  //         version: 'v1',
+  //         config: {
+  //           visState: {
+  //             layers: [
+  //               {
+  //                 type: 'geojson',
+  //                 config: {
+  //                   dataId: 'belaqi-layer',
+  //                   columns: {
+  //                     geojson: '_geojson'
+  //                   },
+  //                   isVisible: true,
+  //                   visConfig: {
+  //                     colorRange: {
+  //                       name: 'BelAQI (PM2.5)',
+  //                       type: 'standard',
+  //                       category: 'BelAQI',
+  //                       ranges: [5, 10, 15, 25, 35, 40, 50, 60, 70, 999],
+  //                       colors: [
+  //                         '#1c00ff',
+  //                         '#3599ff',
+  //                         '#2b9900',
+  //                         '#4dff01',
+  //                         '#fdff00',
+  //                         '#f9bb02',
+  //                         '#f66600',
+  //                         '#f50b00',
+  //                         '#990400',
+  //                         '#660200'
+  //                       ],
+  //                       reversed: false
+  //                     },
+  //                     stroked: false
+  //                   }
+  //                 },
+  //                 visualChannels: {
+  //                   colorField: {
+  //                     name: 'value',
+  //                     type: 'real'
+  //                   },
+  //                   colorScale: 'treshold'
+  //                 }
+  //               }
+  //             ]
+  //           }
+  //         }
+  //       }
+  //     })
+  //   );
+  // };
 
   _addTileLayer = () => {
     this.props.dispatch(
@@ -303,7 +297,7 @@ class App extends Component {
               id: `graph-layer-1`,
               label: `Graph Layer`
             },
-            data: processGraph(mockData)
+            data: processGraph(sampleJsonGraph)
           }
         ],
         config: {
@@ -382,17 +376,6 @@ class App extends Component {
         this._addNotifications(notifications.slice(1));
       }, timeout);
     }
-  }
-
-  _loadSampleData() {
-    // this._loadPointData();
-    // this._loadGeojsonData();
-    // this._loadTripGeoJson();
-    // this._loadGraphLayer();
-    // this._loadIconData();
-    // this._loadH3HexagonData();
-    // this._loadS2Data();
-    // this._loadScenegraphLayer();
   }
 
   _loadPointData() {

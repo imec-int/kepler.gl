@@ -28,6 +28,7 @@ export const SEQ = 'sequential';
 export const SIN = 'singlehue';
 export const QUA = 'qualitative';
 export const DIV = 'diverging';
+export const STD = 'standard';
 
 export const DataVizColors = {
   aqua: '#12939A',
@@ -547,5 +548,22 @@ export const VizColorPalette = [
   ...divergingColors,
   ...sequantialColors,
   ...qualitativeColors,
-  ...customPalette
+  ...customPalette,
+  {
+    name: 'BelAQI',
+    type: STD,
+    category: 'BelAQI',
+    colors: [
+      '#1c00ff',
+      '#3599ff',
+      '#2b9900',
+      '#4dff01',
+      '#fdff00',
+      '#f9bb02',
+      '#f66600',
+      '#f50b00',
+      '#f50b00',
+      '#660200'
+    ]
+  }
 ];

@@ -91,7 +91,9 @@ const getQuantLegends = (scale, labelFormat) => {
 
   const labels = scale.range().map(d => {
     const invert = scale.invertExtent(d);
-    return `${labelFormat(invert[0])} to ${labelFormat(invert[1])}`;
+    return `${labelFormat(invert[0] ? invert[0] : 0)} to ${
+      invert[1] ? labelFormat(invert[1]) : Infinity
+    }`;
   });
 
   return {
@@ -146,11 +148,18 @@ export default class ColorLegend extends Component {
         }
 
         const scaleFunction = SCALE_FUNC[scaleType];
-        // color scale can only be quantize, quantile or ordinal
+        // color scale can only be quantize, quantile, treshold or ordinal
         // @ts-ignore fix d3 scale
-        const scale = scaleFunction()
+        let scale = scaleFunction()
           .domain(domain)
           .range(range.colors);
+
+        if (scaleType === SCALE_TYPES.treshold && range.ranges) {
+          // @ts-ignore fix d3 scale
+          scale = scaleFunction()
+            .domain(range.ranges)
+            .range(range.colors);
+        }
 
         if (scaleType === SCALE_TYPES.ordinal) {
           return getOrdinalLegends(scale);

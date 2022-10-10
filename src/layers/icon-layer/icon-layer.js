@@ -23,14 +23,14 @@ import {BrushingExtension} from '@deck.gl/extensions';
 
 import SvgIconLayer from 'deckgl-layers/svg-icon-layer/svg-icon-layer';
 import IconLayerIcon from './icon-layer-icon';
-import {ICON_FIELDS, CLOUDFRONT} from 'constants/default-settings';
+import {ICON_FIELDS, BLOB_STORAGE} from 'constants/default-settings';
 import IconInfoModalFactory from './icon-info-modal';
 import Layer from '../base-layer';
 import {getTextOffsetByRadius, formatTextLabelData} from '../layer-text-label';
 
 const brushingExtension = new BrushingExtension();
 
-export const SVG_ICON_URL = `${CLOUDFRONT}/icons/svg-icons.json`;
+export const SVG_ICON_URL = `${BLOB_STORAGE}/icons/svg-icons.json`;
 
 export const iconPosAccessor = ({lat, lng, altitude}) => dc => d => [
   dc.valueAt(d.index, lng.fieldIdx),
