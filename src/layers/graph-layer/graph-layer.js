@@ -165,10 +165,11 @@ export default class GraphLayer extends Layer {
 
   calculateDataAttribute({fields, filteredIndex, dataContainer}, getPosition) {
     const data = [];
+    const typeIdx = fields.find(field => field.name === 'type').fieldIdx;
 
     for (let i = 0; i < filteredIndex.length; i++) {
       const index = filteredIndex[i];
-      const type = dataContainer.valueAt(index, 16);
+      const type = dataContainer.valueAt(index, typeIdx);
       const pos = getPosition({index, type});
 
       // if doesn't have point lat or lng, do not add the point
