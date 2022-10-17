@@ -5,94 +5,54 @@ export default {
     nodes: [
       {
         id: '1',
-        label: 'Power plant',
+        label: 'Power Plant (ENGIE Electrabel)',
         metadata: {
-          'is-a': ['room'],
-          gis: [],
-          x: 4.434661720198483,
-          y: 51.20594386351399,
-          'water-level-for-flooding-in-cm': [23],
-          icon: 'https://cdne-cities-assets.azureedge.net/precinct/marker.png',
-          event: 'flood',
-          time: 0,
-          oldState: 1,
-          newState: 5,
-          description: '"flood" at "Room 1". The state changed from "operational" to "outage".',
-          newStateName: 'outage',
-          oldStateName: 'operational'
+          x: 4.258873845576631,
+          y: 51.32482250095482,
+          icon: 'https://cdne-cities-assets.azureedge.net/precinct/power-plant.png'
         }
       },
       {
         id: '2',
-        label: 'Water pump',
+        label: 'Water pump (Aquafin Antwerp-South)',
         metadata: {
-          'is-a': ['room'],
-          x: 4.413684631292414,
-          y: 51.230266736445024,
-          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
-          event: 'flood',
-          time: 1,
-          originator: 1,
-          oldState: 1,
-          newState: 5,
-          description:
-            '"flood" at "Room 2". fire spread via "Room 1". The state changed from "operational" to "outage".',
-          newStateName: 'outage',
-          oldStateName: 'operational'
+          x: 4.36955582033667,
+          y: 51.19878530037734,
+          icon: 'https://cdne-cities-assets.azureedge.net/precinct/water-pump.png'
         }
       },
       {
         id: '3',
-        label: 'Kennedy Tunnel',
+        label: 'Kennedytunnel',
         metadata: {
-          'is-a': ['room'],
           x: 4.371651627317661,
           y: 51.205651742412726,
-          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
-          event: 'flood',
-          time: 2,
-          originator: 2,
-          oldState: 1,
-          newState: 5,
-          description:
-            '"flood" at "Room 3". fire spread via "Room 2". The state changed from "operational" to "majorly affected".',
-          newStateName: 'outage',
-          oldStateName: 'operational'
+          icon: 'https://cdne-cities-assets.azureedge.net/precinct/tunnel.png'
         }
       },
       {
         id: '4',
-        label: 'Hospital',
+        label: 'Hospital (GZA Hospitals campus Sint-Vincentius)',
         metadata: {
-          'is-a': ['room'],
           x: 4.422055727014319,
           y: 51.21352710975356,
-          icon: 'https://stcitiespublic.blob.core.windows.net/assets/precinct/marker.png',
-          event: 'fire',
-          time: 3,
-          originator: 1,
-          oldState: 1,
-          newState: 5,
-          description:
-            '"flood" at "Room 4". fire spread via "Room 3". The state changed from "operational" to "majorly affected".',
-          newStateName: 'outage',
-          oldStateName: 'operational'
+          icon: 'https://cdne-cities-assets.azureedge.net/precinct/hospital.png'
         }
       }
     ],
     edges: [
       {
-        label: 'Power plant - Water pump',
+        label: 'Power Plant (ENGIE Electrabel) - Water pump (Aquafin Antwerp-South)',
         source: '1',
         target: '2'
       },
       {
-        label: 'Water pump - Kennedy Tunnel',
+        label: 'Water pump (Aquafin Antwerp-South) - Kennedytunnel',
         source: '2',
         target: '3'
       },
       {
-        label: 'Power plant - Hospital',
+        label: 'Power Plant (ENGIE Electrabel) - Hospital (GZA Hospitals campus Sint-Vincentius)',
         source: '1',
         target: '4'
       }
