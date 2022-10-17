@@ -543,35 +543,40 @@ export function processGraph(rawData) {
 
   rawData.graph.nodes.forEach(node => {
     const {
-      metadata: {x, y, ...metadata},
-      ...rest
+      id,
+      label,
+      metadata: {x, y, icon, ...metadata}
     } = node;
 
     const mappedNode = {
-      ...rest,
       ...metadata,
+      id,
+      label,
       coordinates: [x, y],
-      from: null,
-      to: null,
-      type: 'node'
+      icon,
+      type: 'node',
+      from: null, // To align edges and nodes in the dataframe
+      to: null // To align edges and nodes in the dataframe
     };
 
-    nodeMap[rest.id] = mappedNode;
+    nodeMap[id] = mappedNode;
     graphData.push(mappedNode);
   });
 
   rawData.graph.edges.forEach(edge => {
-    const {source, target, ...rest} = edge;
+    const {id, source, target, label, ...rest} = edge;
 
     const from = nodeMap[source];
     const to = nodeMap[target];
 
     graphData.push({
       ...rest,
+      id,
+      label,
       coordinates: [...from.coordinates, ...to.coordinates],
+      type: 'edge',
       from: from.label,
-      to: to.label,
-      type: 'edge'
+      to: to.label
     });
   });
 
