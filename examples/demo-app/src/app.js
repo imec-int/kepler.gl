@@ -151,10 +151,10 @@ class App extends Component {
     // this._loadPointData();
     // this._loadGeojsonData();
     // this._loadTripGeoJson();
-    // this._loadGraphLayer();
+    this._loadGraphLayer();
     // this._loadIconData();
     // this._loadH3HexagonData();
-    this._loadH3HData();
+    // this._loadH3HData();
     // this._loadS2Data();
     // this._loadScenegraphLayer();
     // this._loadBelAQI();

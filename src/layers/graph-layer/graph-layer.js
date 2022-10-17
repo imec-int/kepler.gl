@@ -22,11 +22,8 @@ import {BrushingExtension} from '@deck.gl/extensions';
 import {IconLayer, LineLayer} from '@deck.gl/layers';
 
 import Layer from '../base-layer';
-import {hexToRgb} from 'utils/color-utils';
 import {findDefaultColorField} from 'utils/dataset-utils';
 import GraphLayerIcon from './graph-layer-icon';
-import {DEFAULT_LAYER_COLOR} from 'constants/default-settings';
-import {LAYER_VIS_CONFIGS} from 'layers/layer-factory';
 
 export const iconPosAccessor = ({icon}) => dc => d => {
   if (!icon) {
@@ -42,7 +39,7 @@ export const iconPosAccessor = ({icon}) => dc => d => {
   };
 };
 
-export const edgePosAccessor = ({coordinates, type}) => dc => d => {
+export const graphPosAccessor = ({coordinates, type}) => dc => d => {
   if (!type || !coordinates) {
     return null;
   }
@@ -74,7 +71,7 @@ export default class GraphLayer extends Layer {
 
     this.registerVisConfig(graphVisConfigs);
     this.getPositionAccessor = dataContainer => {
-      return edgePosAccessor(this.config.columns)(dataContainer);
+      return graphPosAccessor(this.config.columns)(dataContainer);
     };
     this.getIconAccessor = dataContainer => {
       return iconPosAccessor(this.config.columns)(dataContainer);
@@ -168,10 +165,11 @@ export default class GraphLayer extends Layer {
 
   calculateDataAttribute({fields, filteredIndex, dataContainer}, getPosition) {
     const data = [];
+    const typeIdx = fields.find(field => field.name === 'type').fieldIdx;
 
     for (let i = 0; i < filteredIndex.length; i++) {
       const index = filteredIndex[i];
-      const type = dataContainer.valueAt(index, 16);
+      const type = dataContainer.valueAt(index, typeIdx);
       const pos = getPosition({index, type});
 
       // if doesn't have point lat or lng, do not add the point
