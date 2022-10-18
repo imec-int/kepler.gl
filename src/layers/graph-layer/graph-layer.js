@@ -35,7 +35,8 @@ export const iconPosAccessor = ({icon}) => dc => d => {
     url: dc.valueAt(d.index, icon.fieldIdx),
     width: 64,
     height: 64,
-    anchorY: 64
+    anchorY: 64,
+    mask: true
   };
 };
 
@@ -272,7 +273,8 @@ export default class GraphLayer extends Layer {
         extensions,
 
         // IconLayer stuff
-        getSize: 32
+        getSize: 32,
+        getColor: [252, 3, 232]
       })
     ];
   }
