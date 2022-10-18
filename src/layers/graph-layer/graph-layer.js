@@ -20,6 +20,7 @@
 
 import {BrushingExtension} from '@deck.gl/extensions';
 import {IconLayer, LineLayer} from '@deck.gl/layers';
+import {TripsLayer} from '@deck.gl/geo-layers';
 
 import Layer from '../base-layer';
 import {findDefaultColorField} from 'utils/dataset-utils';
@@ -223,7 +224,8 @@ export default class GraphLayer extends Layer {
       // eslint-disable-next-line no-unused-vars
       data: {data: not_in_use, nodes, edges, ...data},
       gpuFilter,
-      interactionConfig
+      interactionConfig,
+      myUnsafeTimestamp
     } = opts;
 
     const updateTriggers = {
@@ -237,25 +239,40 @@ export default class GraphLayer extends Layer {
     const extensions = [...defaultLayerProps.extensions, brushingExtension];
 
     return [
-      new LineLayer({
-        ...defaultLayerProps,
+      // new LineLayer({
+      //   ...defaultLayerProps,
+      //   id: `edges-${defaultLayerProps.id}`,
+      //   idx: defaultLayerProps.idx,
+      //   ...brushingProps,
+      //   ...data,
+      //   data: edges,
+      //   parameters: {
+      //     // circles will be flat on the map when the altitude column is not used
+      //     depthTest: this.config.columns.altitude?.fieldIdx > -1
+      //   },
+      //   lineWidthUnits: 'pixels',
+      //   updateTriggers,
+      //   extensions,
+
+      //   getColor: [63, 152, 189],
+      //   getWidth: 8,
+      //   getSourcePosition: d => d.coordinates.from,
+      //   getTargetPosition: d => d.coordinates.to
+      // }),
+      new TripsLayer({
         id: `edges-${defaultLayerProps.id}`,
         idx: defaultLayerProps.idx,
-        ...brushingProps,
-        ...data,
         data: edges,
-        parameters: {
-          // circles will be flat on the map when the altitude column is not used
-          depthTest: this.config.columns.altitude?.fieldIdx > -1
-        },
-        lineWidthUnits: 'pixels',
-        updateTriggers,
-        extensions,
-
-        getColor: [63, 152, 189],
-        getWidth: 8,
-        getSourcePosition: d => d.coordinates.from,
-        getTargetPosition: d => d.coordinates.to
+        getPath: d => [d.coordinates.from, d.coordinates.to],
+        // deduct start timestamp from each data point to avoid overflow
+        getTimestamps: d => [0, 200],
+        getColor: [253, 128, 93],
+        opacity: 0.8,
+        rounded: true,
+        fadeTrail: true,
+        trailLength: 120,
+        currentTime: myUnsafeTimestamp % 200,
+        widthMinPixels: 5
       }),
       new IconLayer({
         ...defaultLayerProps,

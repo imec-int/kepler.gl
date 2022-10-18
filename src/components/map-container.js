@@ -108,8 +108,8 @@ export const Attribution = () => (
 );
 
 MapContainerFactory.deps = [MapPopoverFactory, MapControlFactory, EditorFactory];
-
 export default function MapContainerFactory(MapPopover, MapControl, Editor) {
+  let myUnsafePreviousTime = Date.now();
   class MapContainer extends Component {
     static propTypes = {
       // required
@@ -153,6 +153,9 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
 
     constructor(props) {
       super(props);
+      this.state = {
+        myUnsafeTimestamp: 0
+      };
 
       this.previousLayers = {
         // [layers.id]: mapboxLayerConfig
@@ -164,6 +167,7 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
 
     componentDidMount() {
       observeDimensions(this._ref.current, this._handleResize);
+      this._myUnsafeTimeout();
     }
 
     componentWillUnmount() {
@@ -174,6 +178,20 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
       }
       unobserveDimensions(this._ref.current);
     }
+
+    _myUnsafeTimeout = () => {
+      const time = Date.now();
+      if (myUnsafePreviousTime < time - 1000 / 60) {
+        myUnsafePreviousTime = time;
+        this.setState(({myUnsafeTimestamp, ...prev}) => ({
+          ...prev,
+          myUnsafeTimestamp: myUnsafeTimestamp + 1
+        }));
+      }
+      requestAnimationFrame(() => {
+        this._myUnsafeTimeout();
+      });
+    };
 
     _handleResize = dimensions => {
       const {primary} = this.props;
@@ -398,6 +416,8 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
         mapboxApiUrl
       } = this.props;
 
+      const {myUnsafeTimestamp} = this.state;
+
       // initialise layers from props if exists
       let deckGlLayers = this.props.deckGlProps?.layers || [];
 
@@ -412,7 +432,12 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
             const layerCallbacks = {
               onSetLayerDomain: val => this._onLayerSetDomain(idx, val)
             };
-            const layerOverlay = renderDeckGlLayer(this.props, layerCallbacks, idx);
+            const layerOverlay = renderDeckGlLayer(
+              this.props,
+              layerCallbacks,
+              idx,
+              myUnsafeTimestamp
+            );
             return overlays.concat(layerOverlay || []);
           }, []);
         deckGlLayers = deckGlLayers.concat(dataLayers);

@@ -114,7 +114,7 @@ export function getLayerHoverProp({
   return null;
 }
 
-export function renderDeckGlLayer(props, layerCallbacks, idx) {
+export function renderDeckGlLayer(props, layerCallbacks, idx, myUnsafeTimestamp) {
   const {
     datasets,
     layers,
@@ -141,7 +141,8 @@ export function renderDeckGlLayer(props, layerCallbacks, idx) {
     mapState,
     animationConfig,
     objectHovered,
-    visible
+    visible,
+    myUnsafeTimestamp
   });
 }
 
