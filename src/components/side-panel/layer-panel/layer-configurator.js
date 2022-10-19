@@ -127,6 +127,64 @@ export default function LayerConfiguratorFactory(
       return this._renderScatterplotLayerConfig(props);
     }
 
+    _renderGraphLayerConfig({
+      layer,
+      visConfiguratorProps,
+      layerChannelConfigProps,
+      layerConfiguratorProps
+    }) {
+      return (
+        <StyledLayerVisualConfigurator>
+          {/* Fill Color */}
+          <LayerConfigGroup
+            {...(layer.visConfigSettings.filled || {label: 'layer.color'})}
+            {...visConfiguratorProps}
+            property={undefined}
+            label="Icon color"
+            collapsible
+          >
+            {layer.config.colorField ? (
+              <LayerColorRangeSelector {...visConfiguratorProps} />
+            ) : (
+              <LayerColorSelector {...layerConfiguratorProps} />
+            )}
+            <ConfigGroupCollapsibleContent>
+              <ChannelByValueSelector
+                channel={layer.visualChannels.color}
+                {...layerChannelConfigProps}
+              />
+            </ConfigGroupCollapsibleContent>
+          </LayerConfigGroup>
+
+          {/* Outline color */}
+          <LayerConfigGroup
+            {...layer.visConfigSettings.outline}
+            {...visConfiguratorProps}
+            property={undefined}
+            label="Line color"
+            collapsible
+          >
+            {layer.config.strokeColorField ? (
+              <LayerColorRangeSelector {...visConfiguratorProps} property="strokeColorRange" />
+            ) : (
+              <LayerColorSelector
+                {...visConfiguratorProps}
+                selectedColor={layer.config.visConfig.strokeColor}
+                property="strokeColor"
+              />
+            )}
+            <ConfigGroupCollapsibleContent>
+              <ChannelByValueSelector
+                channel={layer.visualChannels.strokeColor}
+                {...layerChannelConfigProps}
+              />
+            </ConfigGroupCollapsibleContent>
+          </LayerConfigGroup>
+          <VisConfigSlider {...layer.visConfigSettings.opacity} {...visConfiguratorProps} />
+        </StyledLayerVisualConfigurator>
+      );
+    }
+
     _renderScatterplotLayerConfig({
       layer,
       visConfiguratorProps,
