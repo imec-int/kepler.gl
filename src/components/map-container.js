@@ -109,7 +109,7 @@ export const Attribution = () => (
 
 MapContainerFactory.deps = [MapPopoverFactory, MapControlFactory, EditorFactory];
 export default function MapContainerFactory(MapPopover, MapControl, Editor) {
-  let myUnsafePreviousTime = Date.now();
+  let myUnsafePreviousTime = performance.now();
   class MapContainer extends Component {
     static propTypes = {
       // required
@@ -180,7 +180,7 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
     }
 
     _myUnsafeTimeout = () => {
-      const time = Date.now();
+      const time = performance.now();
       if (myUnsafePreviousTime < time - 1000 / 60) {
         myUnsafePreviousTime = time;
         this.setState(({myUnsafeTimestamp, ...prev}) => ({
