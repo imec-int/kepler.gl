@@ -109,7 +109,8 @@ export const Attribution = () => (
 
 MapContainerFactory.deps = [MapPopoverFactory, MapControlFactory, EditorFactory];
 export default function MapContainerFactory(MapPopover, MapControl, Editor) {
-  let myUnsafePreviousTime = performance.now();
+  let myUnsafeStart;
+  let myUnsafePreviousTime;
   class MapContainer extends Component {
     static propTypes = {
       // required
@@ -179,18 +180,18 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
       unobserveDimensions(this._ref.current);
     }
 
-    _myUnsafeTimeout = () => {
-      const time = performance.now();
-      if (myUnsafePreviousTime < time - 1000 / 60) {
-        myUnsafePreviousTime = time;
+    _myUnsafeTimeout = timestamp => {
+      if (myUnsafePreviousTime === undefined) {
+        myUnsafePreviousTime = timestamp;
+      }
+      if (myUnsafePreviousTime < timestamp - 1000 / 24) {
+        myUnsafePreviousTime = timestamp;
         this.setState(({myUnsafeTimestamp, ...prev}) => ({
           ...prev,
           myUnsafeTimestamp: myUnsafeTimestamp + 1
         }));
       }
-      requestAnimationFrame(() => {
-        this._myUnsafeTimeout();
-      });
+      requestAnimationFrame(this._myUnsafeTimeout);
     };
 
     _handleResize = dimensions => {
