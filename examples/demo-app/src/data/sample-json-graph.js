@@ -9,7 +9,8 @@ export default {
         metadata: {
           x: 4.258873845576631,
           y: 51.32482250095482,
-          icon: 'https://cdne-cities-assets.azureedge.net/precinct/power-plant.png'
+          icon: 'https://cdne-cities-assets.azureedge.net/precinct/power-plant.png',
+          newState: 1
         }
       },
       {
@@ -18,7 +19,8 @@ export default {
         metadata: {
           x: 4.36955582033667,
           y: 51.19878530037734,
-          icon: 'https://cdne-cities-assets.azureedge.net/precinct/water-pump.png'
+          icon: 'https://cdne-cities-assets.azureedge.net/precinct/water-pump.png',
+          newState: 2
         }
       },
       {
@@ -27,7 +29,8 @@ export default {
         metadata: {
           x: 4.371651627317661,
           y: 51.205651742412726,
-          icon: 'https://cdne-cities-assets.azureedge.net/precinct/tunnel.png'
+          icon: 'https://cdne-cities-assets.azureedge.net/precinct/tunnel.png',
+          newState: 4
         }
       },
       {
@@ -36,7 +39,8 @@ export default {
         metadata: {
           x: 4.422055727014319,
           y: 51.21352710975356,
-          icon: 'https://cdne-cities-assets.azureedge.net/precinct/hospital.png'
+          icon: 'https://cdne-cities-assets.azureedge.net/precinct/hospital.png',
+          newState: 5
         }
       }
     ],

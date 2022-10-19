@@ -310,7 +310,23 @@ class App extends Component {
                   type: 'graph',
                   config: {
                     dataId: 'graph-layer-1',
-                    isVisible: true
+                    isVisible: true,
+                    visConfig: {
+                      colorRange: {
+                        name: 'custom',
+                        type: 'standard',
+                        category: 'BelAQI',
+                        ranges: [1, 2, 3, 4, 5],
+                        colors: ['#4dff01', '#fdff00', '#f9bb02', '#f66600', '#f50b00'],
+                        reversed: false
+                      },
+                      strokeColor: [11, 255, 255],
+                      opacity: 0.8
+                    }
+                  },
+                  visualChannels: {
+                    colorField: {name: 'newState', type: 'integer'},
+                    colorScale: 'treshold'
                   }
                 }
               ]

@@ -21,6 +21,7 @@
 import {BrushingExtension} from '@deck.gl/extensions';
 import {IconLayer, LineLayer} from '@deck.gl/layers';
 
+import {CHANNEL_SCALES} from 'constants/default-settings';
 import Layer from '../base-layer';
 import {findDefaultColorField} from 'utils/dataset-utils';
 import GraphLayerIcon from './graph-layer-icon';
@@ -35,7 +36,8 @@ export const iconPosAccessor = ({icon}) => dc => d => {
     url: dc.valueAt(d.index, icon.fieldIdx),
     width: 64,
     height: 64,
-    anchorY: 64
+    anchorY: 64,
+    mask: true
   };
 };
 
@@ -62,7 +64,17 @@ export const graphVisConfigs = {
   strokeColorRange: 'strokeColorRange',
   sizeRange: 'strokeWidthRange',
   radiusRange: 'radiusRange',
-  heightRange: 'elevationRange'
+  heightRange: 'elevationRange',
+  radius: 'radius',
+  fixedRadius: 'fixedRadius',
+  outline: 'outline',
+  thickness: 'thickness',
+  filled: {
+    type: 'boolean',
+    label: 'layer.fillColor',
+    defaultValue: true,
+    property: 'filled'
+  }
 };
 
 export default class GraphLayer extends Layer {
@@ -98,6 +110,27 @@ export default class GraphLayer extends Layer {
     return [...super.noneLayerDataAffectingProps, 'radius'];
   }
 
+  get visualChannels() {
+    return {
+      color: {
+        ...super.visualChannels.color,
+        accessor: 'getIconColor',
+        defaultValue: config => config.color || [157, 255, 255]
+      },
+      strokeColor: {
+        property: 'strokeColor',
+        key: 'strokeColor',
+        field: 'strokeColorField',
+        scale: 'strokeColorScale',
+        domain: 'strokeColorDomain',
+        range: 'strokeColorRange',
+        channelScaleType: CHANNEL_SCALES.color,
+        accessor: 'getLineColor',
+        defaultValue: config => config.visConfig.strokeColor || [63, 152, 189]
+      }
+    };
+  }
+
   setInitialLayerConfig(dataset) {
     const defaultColorField = findDefaultColorField(dataset);
 
@@ -113,7 +146,12 @@ export default class GraphLayer extends Layer {
 
   getDefaultLayerConfig(props = {}) {
     return {
-      ...super.getDefaultLayerConfig(props)
+      ...super.getDefaultLayerConfig(props),
+
+      // add stroke color visual channel
+      strokeColorField: null,
+      strokeColorDomain: [0, 1],
+      strokeColorScale: 'quantile'
     };
   }
 
@@ -251,7 +289,8 @@ export default class GraphLayer extends Layer {
         updateTriggers,
         extensions,
 
-        getColor: [63, 152, 189],
+        // LineLayer stuff
+        getColor: data.getLineColor,
         getWidth: 8,
         getSourcePosition: d => d.coordinates.from,
         getTargetPosition: d => d.coordinates.to
@@ -267,12 +306,13 @@ export default class GraphLayer extends Layer {
         parameters: {
           depthTest: this.config.columns.altitude?.fieldIdx > -1
         },
-        lineWidthUnits: 'pixels',
+        sizeUnits: 'pixels',
         updateTriggers,
         extensions,
 
         // IconLayer stuff
-        getSize: 32
+        getSize: 32,
+        getColor: data.getIconColor
       })
     ];
   }
