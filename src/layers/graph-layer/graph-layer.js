@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 import {BrushingExtension} from '@deck.gl/extensions';
-import {IconLayer, LineLayer} from '@deck.gl/layers';
+import {IconLayer, LineLayer, ScatterplotLayer} from '@deck.gl/layers';
 
 import {CHANNEL_SCALES} from 'constants/default-settings';
 import Layer from '../base-layer';
@@ -36,7 +36,6 @@ export const iconPosAccessor = ({icon}) => dc => d => {
     url: dc.valueAt(d.index, icon.fieldIdx),
     width: 64,
     height: 64,
-    anchorY: 64,
     mask: true
   };
 };
@@ -260,8 +259,11 @@ export default class GraphLayer extends Layer {
       // eslint-disable-next-line no-unused-vars
       data: {data: not_in_use, nodes, edges, ...data},
       gpuFilter,
-      interactionConfig
+      interactionConfig,
+      mapState
     } = opts;
+
+    const radiusScale = this.getRadiusScaleByZoom(mapState, false);
 
     const updateTriggers = {
       getPosition: this.config.columns,
@@ -274,45 +276,98 @@ export default class GraphLayer extends Layer {
     const extensions = [...defaultLayerProps.extensions, brushingExtension];
 
     return [
+      // White background border for accentuating the edges. This is clickable.
       new LineLayer({
         ...defaultLayerProps,
-        id: `edges-${defaultLayerProps.id}`,
-        idx: defaultLayerProps.idx,
         ...brushingProps,
         ...data,
+        id: `edges-${defaultLayerProps.id}`,
+        idx: defaultLayerProps.idx,
         data: edges,
+        updateTriggers,
+        extensions,
         parameters: {
           // circles will be flat on the map when the altitude column is not used
           depthTest: this.config.columns.altitude?.fieldIdx > -1
         },
-        lineWidthUnits: 'pixels',
-        updateTriggers,
-        extensions,
 
-        // LineLayer stuff
-        getColor: data.getLineColor,
-        getWidth: 8,
+        // LineLayer properties
+        getColor: [255, 255, 255], // Background line is always white right now
+        getWidth: d => 6,
+        lineWidthUnits: 'pixels',
         getSourcePosition: d => d.coordinates.from,
         getTargetPosition: d => d.coordinates.to
       }),
-      new IconLayer({
+      // Foreground layer for the edges, not clickable. This contains the actual color of the edge.
+      new LineLayer({
         ...defaultLayerProps,
-        id: `nodes-${defaultLayerProps.id}`,
+        id: `edges-${defaultLayerProps.id}-color`,
         idx: defaultLayerProps.idx,
-        ...brushingProps,
-        // ...layerProps,
         ...data,
-        data: nodes,
+        data: edges,
+        updateTriggers,
         parameters: {
+          // circles will be flat on the map when the altitude column is not used
           depthTest: this.config.columns.altitude?.fieldIdx > -1
         },
-        sizeUnits: 'pixels',
+
+        // LineLayer properties
+        getColor: data.getLineColor,
+        getWidth: d => 2,
+        lineWidthUnits: 'pixels',
+        getSourcePosition: d => d.coordinates.from,
+        getTargetPosition: d => d.coordinates.to
+      }),
+      // We use a "billboard" scatterplot for the circle background of each icon. This is clickable
+      new ScatterplotLayer({
+        ...defaultLayerProps,
+        ...brushingProps,
+        ...data,
+        id: `nodes-${defaultLayerProps.id}`,
+        idx: defaultLayerProps.idx,
         updateTriggers,
         extensions,
+        parameters: {
+          // circles will be flat on the map when the altitude column is not used
+          depthTest: this.config.columns.altitude?.fieldIdx > -1
+        },
 
-        // IconLayer stuff
-        getSize: 32,
-        getColor: data.getIconColor
+        // ScatterplotLayer properties
+        billboard: true,
+        filled: true,
+        stroked: true,
+        data: nodes,
+        getPosition: d => d.coordinates,
+
+        getRadius: d => 16,
+        radiusUnits: 'pixels',
+        getFillColor: data.getIconColor,
+
+        getLineWidth: d => 2,
+        lineWidthUnits: 'pixels',
+        getLineColor: data.getLineColor,
+
+        radiusScale,
+        lineWidthScale: radiusScale
+      }),
+      // The icon visible inside the circle background, not clickable.
+      new IconLayer({
+        ...defaultLayerProps,
+        id: `nodes-${defaultLayerProps.id}-icons`,
+        idx: defaultLayerProps.idx,
+        ...data,
+        data: nodes,
+        updateTriggers,
+        parameters: {
+          // circles will be flat on the map when the altitude column is not used
+          depthTest: this.config.columns.altitude?.fieldIdx > -1
+        },
+
+        // IconLayer properties
+        getSize: d => 16,
+        sizeUnits: 'pixels',
+        getColor: data.getLineColor,
+        sizeScale: radiusScale
       })
     ];
   }
