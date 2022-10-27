@@ -317,11 +317,11 @@ class App extends Component {
                         type: 'standard',
                         category: 'BelAQI',
                         ranges: [1, 2, 3, 4, 5],
-                        colors: ['#4dff01', '#fdff00', '#f9bb02', '#f66600', '#f50b00'],
+                        colors: ['#83E980', '#FFFC58', '#FEC44E', '#FF8A3F', '#ff4545'],
                         reversed: false
                       },
-                      strokeColor: [11, 255, 255],
-                      opacity: 0.8
+                      strokeColor: [50, 50, 50],
+                      opacity: 1
                     }
                   },
                   visualChannels: {
