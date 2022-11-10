@@ -391,10 +391,37 @@ export const getPolygonFilterFunctor = (layer, filter, dataContainer) => {
         const pos = getCentroid({id});
         return pos.every(Number.isFinite) && isInPolygon(pos, filter.value);
       };
+    case LAYER_TYPES.geojson:
+      return data => {
+        const pos = getPosition(data);
+        return getGeoJsonPoints(pos).every(
+          point => point.every(Number.isFinite) && isInPolygon(point, filter.value)
+        );
+      };
     default:
       return () => true;
   }
 };
+
+/**
+ * Returns an array of Points (array of coordinates) of a given geojson's position.
+ * @param position
+ * @returns ([number, number] || [number, number, number])[]
+ */
+function getGeoJsonPoints(position) {
+  switch (position.type) {
+    case 'Point':
+      return [position.coordinates];
+    case 'LineString':
+      return position.coordinates;
+    case 'Polygon':
+      // exterior line ring
+      return position.coordinates[0];
+    default:
+      // unsupported type
+      return [];
+  }
+}
 
 /**
  * @param field dataset Field
