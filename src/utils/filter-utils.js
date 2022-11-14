@@ -404,19 +404,20 @@ export const getPolygonFilterFunctor = (layer, filter, dataContainer) => {
 };
 
 /**
- * Returns an array of Points (array of coordinates) of a given geojson's position.
+ * Returns the array of Points (array of coordinates) of a given GeoJson position.
  * @param position
  * @returns ([number, number] || [number, number, number])[]
  */
 function getGeoJsonPoints(position) {
+  const coordinates = position?.coordinates ?? [];
   switch (position.type) {
     case 'Point':
-      return [position.coordinates];
+      return [coordinates];
     case 'LineString':
-      return position.coordinates;
+      return coordinates;
     case 'Polygon':
       // exterior line ring
-      return position.coordinates[0];
+      return coordinates[0];
     default:
       // unsupported type
       return [];
