@@ -31,7 +31,8 @@ import {
   isInPolygon,
   diffFilters,
   getHistogram,
-  getTimestampFieldDomain
+  getTimestampFieldDomain,
+  isGeoJsonPositionInPolygon
 } from 'utils/filter-utils';
 
 import {getDatasetFieldIndexForFilter} from 'utils/gpu-filter-utils';
@@ -391,6 +392,32 @@ test('filterUtils -> Polygon getFilterFunction ', t => {
     filterFunction(data[0], 0),
     true,
     `${data[0][0]} - ${data[0][1]} should be inside the range`
+  );
+
+  t.end();
+});
+
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
+  const {layers, data} = mockPolygonData;
+  const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
+
+  const pointPosition = {
+    type: 'Point',
+    coordinates: [data[0][0], data[0][0]]
+  };
+
+  t.equal(
+    isGeoJsonPositionInPolygon(pointPosition, polygonFilter.value),
+    false,
+    `${data[0][0]} - ${data[0][0]} should not be inside the range`
+  );
+
+  pointPosition.coordinates = [data[0][1], data[0][0]];
+
+  t.equal(
+    isGeoJsonPositionInPolygon(pointPosition, polygonFilter.value),
+    true,
+    `${data[0][1]} - ${data[0][1]} should be inside the range`
   );
 
   t.end();

@@ -394,14 +394,26 @@ export const getPolygonFilterFunctor = (layer, filter, dataContainer) => {
     case LAYER_TYPES.geojson:
       return data => {
         const pos = getPosition(data);
-        return getGeoJsonPoints(pos).every(
-          point => point.every(Number.isFinite) && isInPolygon(point, filter.value)
-        );
+        return isGeoJsonPositionInPolygon(pos, filter.value);
       };
     default:
       return () => true;
   }
 };
+
+/**
+ * Returns whether a GeoJson position is inside a given Polygon.
+ * A position is considered to be inside a polygon if all of its points are
+ * located inside said Polygon.
+ * @param position
+ * @param polygon
+ * @returns boolean
+ */
+export function isGeoJsonPositionInPolygon(position, polygon) {
+  return getGeoJsonPoints(position).every(
+    point => point.every(Number.isFinite) && isInPolygon(point, polygon)
+  );
+}
 
 /**
  * Returns the array of Points (array of coordinates) of a given GeoJson position.
