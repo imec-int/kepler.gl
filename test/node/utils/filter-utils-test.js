@@ -420,6 +420,28 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     `${data[0][1]} - ${data[0][1]} should be inside the range`
   );
 
+  const lineStringPosition = {
+    type: 'LineString',
+    coordinates: [data[0].slice(0, 2), data[0].slice(2)]
+  };
+
+  t.equal(
+    isGeoJsonPositionInPolygon(lineStringPosition, polygonFilter.value),
+    false,
+    `${lineStringPosition.coordinates} should not be in range`
+  );
+
+  lineStringPosition.coordinates = [
+    [data[0][1], data[0][0]],
+    [data[0][1], data[2][0]]
+  ];
+
+  t.equal(
+    isGeoJsonPositionInPolygon(lineStringPosition, polygonFilter.value),
+    true,
+    `${lineStringPosition.coordinates} should be in range`
+  );
+
   t.end();
 });
 
