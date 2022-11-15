@@ -412,12 +412,36 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     `${data[0][0]} - ${data[0][0]} should not be inside the range`
   );
 
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: pointPosition
+      },
+      polygonFilter.value
+    ),
+    false,
+    `(feature) ${pointPosition.coordinates} should not be in range`
+  );
+
   pointPosition.coordinates = [data[0][1], data[0][0]];
 
   t.equal(
     isGeoJsonPositionInPolygon(pointPosition, polygonFilter.value),
     true,
     `${data[0][1]} - ${data[0][1]} should be inside the range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: pointPosition
+      },
+      polygonFilter.value
+    ),
+    true,
+    `(feature) ${pointPosition.coordinates} should be in range`
   );
 
   const lineStringPosition = {
@@ -431,6 +455,18 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     `${lineStringPosition.coordinates} should not be in range`
   );
 
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: lineStringPosition
+      },
+      polygonFilter.value
+    ),
+    false,
+    `(feature) ${lineStringPosition.coordinates} should not be in range`
+  );
+
   lineStringPosition.coordinates = [
     [data[0][1], data[0][0]],
     [data[0][1], data[2][0]]
@@ -440,6 +476,18 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     isGeoJsonPositionInPolygon(lineStringPosition, polygonFilter.value),
     true,
     `${lineStringPosition.coordinates} should be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: lineStringPosition
+      },
+      polygonFilter.value
+    ),
+    true,
+    `(feature) ${lineStringPosition.coordinates} should be in range`
   );
 
   const polygonPosition = {
@@ -459,6 +507,18 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     `${polygonPosition.coordinates} should be in range`
   );
 
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: polygonPosition
+      },
+      polygonFilter.value
+    ),
+    true,
+    `(feature) ${polygonPosition.coordinates} should be in range`
+  );
+
   polygonPosition.coordinates = [
     [data[0].slice(0, 2), data[0].slice(0, 2), data[0].slice(0, 2), data[0].slice(2)]
   ];
@@ -467,6 +527,18 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     isGeoJsonPositionInPolygon(polygonPosition, polygonFilter.value),
     false,
     `${polygonPosition.coordinates} should not be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: polygonPosition
+      },
+      polygonFilter.value
+    ),
+    false,
+    `(feature) ${polygonPosition.coordinates} should not be in range`
   );
 
   polygonPosition.coordinates = [
@@ -483,6 +555,18 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     isGeoJsonPositionInPolygon(polygonPosition, polygonFilter.value),
     true,
     `${polygonPosition.coordinates} should be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: polygonPosition
+      },
+      polygonFilter.value
+    ),
+    true,
+    `(feature) ${polygonPosition.coordinates} should be in range`
   );
 
   const multiPolygonPosition = {
