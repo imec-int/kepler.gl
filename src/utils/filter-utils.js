@@ -20,7 +20,7 @@
 
 import {ascending, extent, histogram as d3Histogram, ticks} from 'd3-array';
 import keyMirror from 'keymirror';
-import {console as Console} from 'global/console';
+import {console as Console} from 'global/window';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
 
@@ -421,8 +421,17 @@ export function isGeoJsonPositionInPolygon(position, polygon) {
  * @returns ([number, number] || [number, number, number])[]
  */
 function getGeoJsonPoints(position) {
+  if (typeof position === 'string') {
+    try {
+      position = JSON.parse(position);
+    } catch (e) {
+      Console.error(`Could not parse position: ${position}`);
+      return [];
+    }
+  }
+
   const coordinates = position?.coordinates ?? [];
-  switch (position.type) {
+  switch (position?.type) {
     case 'Point':
       return [coordinates];
     case 'LineString':
@@ -435,7 +444,8 @@ function getGeoJsonPoints(position) {
     case 'Feature':
       return getGeoJsonPoints(position.geometry);
     default:
-      Console.error(`Unsupported geojson type`);
+      Console.log(`Unsupported geojson type ${position?.type}`);
+      // Console.error(`Unsupported geojson type`);
       return [];
   }
 }

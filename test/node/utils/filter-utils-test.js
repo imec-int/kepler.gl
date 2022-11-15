@@ -682,6 +682,56 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon (MultiPolygon)', t => {
   t.end();
 });
 
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon (Position as String)', t => {
+  const {layers, data} = mockPolygonData;
+  const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
+
+  const multiPolygonPosition = {
+    type: 'MultiPolygon',
+    coordinates: [
+      [
+        [
+          [data[0][1], data[0][0]],
+          [data[2][1], data[2][0]],
+          [data[0][1], data[0][0]]
+        ]
+      ],
+      [
+        [
+          [data[2][1], data[2][0]],
+          [data[0][1], data[0][0]],
+          [data[2][1], data[2][0]]
+        ]
+      ]
+    ]
+  };
+
+  t.equal(
+    isGeoJsonPositionInPolygon(JSON.stringify(multiPolygonPosition), polygonFilter.value),
+    true,
+    `${multiPolygonPosition.coordinates} should be in range`
+  );
+
+  multiPolygonPosition.coordinates[0] = [
+    [
+      [data[1][1], data[2][0]],
+      [data[0][1], data[0][0]],
+      [data[2][1], data[2][0]]
+    ]
+  ];
+
+  t.equal(
+    isGeoJsonPositionInPolygon(JSON.stringify(multiPolygonPosition), polygonFilter.value),
+    false,
+    `${multiPolygonPosition.coordinates} should not be in range`
+  );
+
+  const malformedString = 'something that is not json';
+  t.equal(isGeoJsonPositionInPolygon(malformedString, polygonFilter.value), true);
+
+  t.end();
+});
+
 /* eslint-enable max-statements */
 
 test('filterUtils -> diffFilters', t => {
