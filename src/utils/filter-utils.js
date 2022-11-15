@@ -394,7 +394,7 @@ export const getPolygonFilterFunctor = (layer, filter, dataContainer) => {
     case LAYER_TYPES.geojson:
       return data => {
         const pos = getPosition(data);
-        return isGeoJsonPositionInPolygon(pos, filter.value);
+        return pos && isGeoJsonPositionInPolygon(pos, filter.value);
       };
     default:
       return () => true;
@@ -430,8 +430,12 @@ function getGeoJsonPoints(position) {
     case 'Polygon':
       // exterior line ring
       return coordinates[0];
+    case 'MultiPolygon':
+      return coordinates.flatMap(c => c[0]);
+    case 'Feature':
+      return getGeoJsonPoints(position.geometry);
     default:
-      // unsupported type
+      Console.error(`Unsupported geojson type`);
       return [];
   }
 }
