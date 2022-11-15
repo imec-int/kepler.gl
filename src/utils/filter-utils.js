@@ -445,7 +445,6 @@ function getGeoJsonPoints(position) {
       return getGeoJsonPoints(position.geometry);
     default:
       Console.log(`Unsupported geojson type ${position?.type}`);
-      // Console.error(`Unsupported geojson type`);
       return [];
   }
 }
