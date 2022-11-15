@@ -397,7 +397,7 @@ test('filterUtils -> Polygon getFilterFunction ', t => {
   t.end();
 });
 
-test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon (Point)', t => {
   const {layers, data} = mockPolygonData;
   const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
 
@@ -444,6 +444,13 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     `(feature) ${pointPosition.coordinates} should be in range`
   );
 
+  t.end();
+});
+
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon (LineString)', t => {
+  const {layers, data} = mockPolygonData;
+  const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
+
   const lineStringPosition = {
     type: 'LineString',
     coordinates: [data[0].slice(0, 2), data[0].slice(2)]
@@ -489,6 +496,13 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     true,
     `(feature) ${lineStringPosition.coordinates} should be in range`
   );
+
+  t.end();
+});
+
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon (Polygon)', t => {
+  const {layers, data} = mockPolygonData;
+  const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
 
   const polygonPosition = {
     type: 'Polygon',
@@ -569,6 +583,12 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     `(feature) ${polygonPosition.coordinates} should be in range`
   );
 
+  t.end();
+});
+
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon (MultiPolygon)', t => {
+  const {layers, data} = mockPolygonData;
+  const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
   const multiPolygonPosition = {
     type: 'MultiPolygon',
     coordinates: [
