@@ -511,6 +511,18 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     `${multiPolygonPosition.coordinates} should be in range`
   );
 
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: multiPolygonPosition
+      },
+      polygonFilter.value
+    ),
+    true,
+    `(feature)${multiPolygonPosition.coordinates} should be in range`
+  );
+
   multiPolygonPosition.coordinates[0] = [
     [
       [data[1][1], data[2][0]],
@@ -525,6 +537,18 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     `${multiPolygonPosition.coordinates} should not be in range`
   );
 
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: multiPolygonPosition
+      },
+      polygonFilter.value
+    ),
+    false,
+    `(feature) ${multiPolygonPosition.coordinates} should not be in range`
+  );
+
   multiPolygonPosition.coordinates[1] = [
     [
       [data[0][1], data[0][0]],
@@ -537,6 +561,18 @@ test('filterUtils -> Polygon isGeoJsonPositionInPolygon', t => {
     isGeoJsonPositionInPolygon(multiPolygonPosition, polygonFilter.value),
     false,
     `${multiPolygonPosition.coordinates} should not be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: multiPolygonPosition
+      },
+      polygonFilter.value
+    ),
+    false,
+    `(feature) ${multiPolygonPosition.coordinates} should not be in range`
   );
 
   t.end();
