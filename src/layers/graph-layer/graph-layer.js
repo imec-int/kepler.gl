@@ -293,7 +293,7 @@ export default class GraphLayer extends Layer {
 
         // LineLayer properties
         getColor: [255, 255, 255], // Background line is always white right now
-        getWidth: d => 6,
+        getWidth: d => 8,
         lineWidthUnits: 'pixels',
         getSourcePosition: d => d.coordinates.from,
         getTargetPosition: d => d.coordinates.to
@@ -313,7 +313,7 @@ export default class GraphLayer extends Layer {
 
         // LineLayer properties
         getColor: data.getLineColor,
-        getWidth: d => 2,
+        getWidth: d => 3,
         lineWidthUnits: 'pixels',
         getSourcePosition: d => d.coordinates.from,
         getTargetPosition: d => d.coordinates.to
@@ -339,7 +339,7 @@ export default class GraphLayer extends Layer {
         data: nodes,
         getPosition: d => d.coordinates,
 
-        getRadius: d => 16,
+        getRadius: d => 22,
         radiusUnits: 'pixels',
         getFillColor: data.getIconColor,
 
@@ -363,11 +363,17 @@ export default class GraphLayer extends Layer {
           depthTest: this.config.columns.altitude?.fieldIdx > -1
         },
 
+        loadOptions: {
+          imagebitmap: {
+            resizeWidth: 200,
+            resizeHeight: 200
+          }
+        },
         // IconLayer properties
-        getSize: d => 16,
+        getSize: d => 20,
         sizeUnits: 'pixels',
         getColor: data.getLineColor,
-        sizeScale: radiusScale
+        sizeScale: radiusScale + 0.6
       })
     ];
   }
