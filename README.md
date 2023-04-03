@@ -1,3 +1,12 @@
+# IMEC fork release guide
+
+1. First update, commit and merge a new `v2.5.5-<new>` version number in the `package.json` file
+2. Click `draft new release` on the releases page
+3. In the `Choose a tag` input field, type the new tag `v2.5.5-<new>` and click `➕ Create new tag: v2.5.5-<new> on publish`
+4. Insert `v2.5.5-<new>` as release title
+5. Click `Generate release notes`
+6. Click `Publish release`
+
 <p align="right">
   <a href="https://npmjs.org/package/kepler.gl">
     <img src="https://img.shields.io/npm/v/kepler.gl.svg?style=flat" alt="version" />

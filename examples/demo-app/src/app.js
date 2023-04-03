@@ -32,7 +32,7 @@ import {replaceMapControl} from './factories/map-control';
 import {replacePanelHeader} from './factories/panel-header';
 import {AUTH_TOKENS} from './constants/default-settings';
 import {messages} from './constants/localization';
-import {processRowObject} from '../../../src/processors/data-processor';
+import {processGraph, processRowObject} from '../../../src/processors/data-processor';
 import KeplerGlSchema from 'kepler.gl/schemas';
 
 import {
@@ -45,7 +45,6 @@ import {
 import {loadCloudMap, addDataToMap, addNotification} from 'kepler.gl/actions';
 import {CLOUD_PROVIDERS} from './cloud-providers';
 
-// let looper = false;
 const KeplerGl = require('kepler.gl/components').injectComponents([
   replaceLoadDataModal(),
   replaceMapControl(),
@@ -55,6 +54,7 @@ const KeplerGl = require('kepler.gl/components').injectComponents([
 // Sample data
 /* eslint-disable no-unused-vars */
 import sampleTripData, {testCsvData, sampleTripDataConfig} from './data/sample-trip-data';
+import sampleJsonGraph from './data/sample-json-graph';
 import sampleGeojson from './data/sample-small-geojson';
 import sampleGeojsonPoints from './data/sample-geojson-points';
 import sampleGeojsonConfig from './data/sample-geojson-config';
@@ -64,7 +64,6 @@ import sampleAnimateTrip from './data/sample-animate-trip-data';
 import sampleIconCsv, {config as savedMapConfig} from './data/sample-icon-csv';
 
 import {processCsvData, processGeojson} from 'kepler.gl/processors';
-/* eslint-enable no-unused-vars */
 
 const BannerHeight = 48;
 const BannerKey = `banner-${FormLink}`;
@@ -100,7 +99,6 @@ const GlobalStyle = styled.div`
 `;
 
 class App extends Component {
-  // looper = false;
   state = {
     showBanner: false,
     width: window.innerWidth,
@@ -135,34 +133,9 @@ class App extends Component {
       this.props.dispatch(loadRemoteMap({dataUrl: query.mapUrl}));
     }
 
-    setTimeout(() => {
-      this._addTileLayer();
-    }, 10000);
-
-    // this.loopLayers(
-    //   'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_3<timeslot>_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-    // );
-
-    // delay zs to show the banner
-    // if (!window.localStorage.getItem(BannerKey)) {
-    //   window.setTimeout(this._showBanner, 3000);
-    // }
     // load sample data
-    // this._loadSampleData();
-
-    // Notifications
-    // this._loadMockNotifications();
+    this._loadSampleData();
   }
-
-  // loopLayers = url => {
-  //   setTimeout(() => {
-  //     console.log('update layer?', this.looper);
-
-  //     this._updateTileLayer('tile-layer-1', url.replace('<timeslot>', this.looper ? 0 : 5));
-  //     this.looper = !this.looper;
-  //     this.loopLayers(url);
-  //   }, 3000);
-  // };
 
   getMapConfig() {
     // retrieve kepler.gl store
@@ -173,6 +146,148 @@ class App extends Component {
     // create the config object
     return KeplerGlSchema.getConfigToSave(map);
   }
+
+  _loadSampleData() {
+    // this._loadPointData();
+    // this._loadGeojsonData();
+    // this._loadTripGeoJson();
+    this._loadGraphLayer();
+    // this._loadIconData();
+    // this._loadH3HexagonData();
+    // this._loadH3HData();
+    // this._loadS2Data();
+    // this._loadScenegraphLayer();
+    // this._loadBelAQI();
+    // Notifications
+    // this._loadMockNotifications();
+  }
+
+  async _loadH3HData() {
+    const data = await fetch(
+      'https://cdne-cities-assets.azureedge.net/urbanage/hex_gent_8.json'
+    ).then(res => res.json());
+    this.props.dispatch(
+      addDataToMap({
+        datasets: [
+          {
+            info: {
+              label: 'H3 Hexagons V2',
+              id: 'h3-hex-id'
+            },
+            data: processRowObject(data)
+          }
+        ],
+        options: {
+          keepExistingConfig: true
+        }
+      })
+    );
+  }
+
+  // _loadBelAQI = () => {
+  //   this.props.dispatch(
+  //     addDataToMap({
+  //       datasets: [
+  //         {
+  //           info: {
+  //             id: 'belaqi-layer',
+  //             label: 'test-belaqi'
+  //           },
+  //           data: processGeojson(mockGeoJson)
+  //         }
+  //       ],
+  //       config: {
+  //         keepExistingConfig: true,
+  //         version: 'v1',
+  //         config: {
+  //           visState: {
+  //             layers: [
+  //               {
+  //                 type: 'geojson',
+  //                 config: {
+  //                   dataId: 'belaqi-layer',
+  //                   columns: {
+  //                     geojson: '_geojson'
+  //                   },
+  //                   isVisible: true,
+  //                   visConfig: {
+  //                     colorRange: {
+  //                       name: 'BelAQI (PM2.5)',
+  //                       type: 'standard',
+  //                       category: 'BelAQI',
+  //                       ranges: [5, 10, 15, 25, 35, 40, 50, 60, 70, 999],
+  //                       colors: [
+  //                         '#1c00ff',
+  //                         '#3599ff',
+  //                         '#2b9900',
+  //                         '#4dff01',
+  //                         '#fdff00',
+  //                         '#f9bb02',
+  //                         '#f66600',
+  //                         '#f50b00',
+  //                         '#990400',
+  //                         '#660200'
+  //                       ],
+  //                       reversed: false
+  //                     },
+  //                     stroked: false
+  //                   }
+  //                 },
+  //                 visualChannels: {
+  //                   colorField: {
+  //                     name: 'value',
+  //                     type: 'real'
+  //                   },
+  //                   colorScale: 'treshold'
+  //                 }
+  //               }
+  //             ]
+  //           }
+  //         }
+  //       }
+  //     })
+  //   );
+  // };
+
+  _addWMSLayer = () => {
+    this.props.dispatch(
+      addDataToMap({
+        datasets: [
+          {
+            info: {
+              id: `wms-layer-1`,
+              label: `WMS Layer`
+            },
+            data: processRowObject([
+              {
+                url:
+                  'http://localhost:8085/geoserver/geoserver-imec/wms?layers=geoserver-imec:cf_avg_friday',
+                crs: 'EPSG:4326',
+                styles: 'geoserver-imec:CF-style'
+              }
+            ])
+          }
+        ],
+        config: {
+          keepExistingConfig: true,
+          config: {
+            visState: {
+              layers: [
+                {
+                  type: 'wms',
+                  label: 'wms layer',
+                  config: {
+                    dataId: 'wms-layer-1',
+                    isVisible: true
+                  }
+                }
+              ]
+            }
+          }
+        }
+      })
+    );
+  };
 
   _addTileLayer = () => {
     this.props.dispatch(
@@ -211,6 +326,55 @@ class App extends Component {
       })
     );
   };
+
+  _loadGraphLayer() {
+    this.props.dispatch(
+      addDataToMap({
+        datasets: [
+          {
+            info: {
+              id: `graph-layer-1`,
+              label: `Graph Layer`
+            },
+            data: processGraph(sampleJsonGraph)
+          }
+        ],
+        config: {
+          keepExistingConfig: true,
+          version: 'v1',
+          config: {
+            visState: {
+              layers: [
+                {
+                  type: 'graph',
+                  config: {
+                    dataId: 'graph-layer-1',
+                    isVisible: true,
+                    visConfig: {
+                      colorRange: {
+                        name: 'custom',
+                        type: 'standard',
+                        category: 'BelAQI',
+                        ranges: [1, 2, 3, 4, 5],
+                        colors: ['#83E980', '#FFFC58', '#FEC44E', '#FF8A3F', '#ff4545'],
+                        reversed: false
+                      },
+                      strokeColor: [50, 50, 50],
+                      opacity: 1
+                    }
+                  },
+                  visualChannels: {
+                    colorField: {name: 'newState', type: 'integer'},
+                    colorScale: 'treshold'
+                  }
+                }
+              ]
+            }
+          }
+        }
+      })
+    );
+  }
 
   _updateTileLayer(dataId, url) {
     const config = this.getMapConfig();
@@ -267,16 +431,6 @@ class App extends Component {
         this._addNotifications(notifications.slice(1));
       }, timeout);
     }
-  }
-
-  _loadSampleData() {
-    this._loadPointData();
-    // this._loadGeojsonData();
-    this._loadTripGeoJson();
-    // this._loadIconData();
-    // this._loadH3HexagonData();
-    // this._loadS2Data();
-    // this._loadScenegraphLayer();
   }
 
   _loadPointData() {

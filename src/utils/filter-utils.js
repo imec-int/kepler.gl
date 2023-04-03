@@ -20,7 +20,7 @@
 
 import {ascending, extent, histogram as d3Histogram, ticks} from 'd3-array';
 import keyMirror from 'keymirror';
-import {console as Console} from 'global/console';
+import {console as Console} from 'global/window';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
 
@@ -391,10 +391,63 @@ export const getPolygonFilterFunctor = (layer, filter, dataContainer) => {
         const pos = getCentroid({id});
         return pos.every(Number.isFinite) && isInPolygon(pos, filter.value);
       };
+    case LAYER_TYPES.geojson:
+      return data => {
+        const pos = getPosition(data);
+        return pos && isGeoJsonPositionInPolygon(pos, filter.value);
+      };
     default:
       return () => true;
   }
 };
+
+/**
+ * Returns whether a GeoJson position is inside a given Polygon.
+ * A position is considered to be inside a polygon if all of its points are
+ * located inside said Polygon.
+ * @param position
+ * @param polygon
+ * @returns boolean
+ */
+export function isGeoJsonPositionInPolygon(position, polygon) {
+  return getGeoJsonPoints(position).every(
+    point => point.every(Number.isFinite) && isInPolygon(point, polygon)
+  );
+}
+
+/**
+ * Returns the array of Points (array of coordinates) of a given GeoJson position.
+ * @param position
+ * @returns ([number, number] || [number, number, number])[]
+ */
+function getGeoJsonPoints(position) {
+  if (typeof position === 'string') {
+    try {
+      position = JSON.parse(position);
+    } catch (e) {
+      Console.error(`Could not parse position: ${position}`);
+      return [];
+    }
+  }
+
+  const coordinates = position?.coordinates ?? [];
+  switch (position?.type) {
+    case 'Point':
+      return [coordinates];
+    case 'LineString':
+      return coordinates;
+    case 'Polygon':
+      // exterior line ring
+      return coordinates[0];
+    case 'MultiPolygon':
+      return coordinates.flatMap(c => c[0]);
+    case 'Feature':
+      return getGeoJsonPoints(position.geometry);
+    default:
+      Console.log(`Unsupported geojson type ${position?.type}`);
+      return [];
+  }
+}
 
 /**
  * @param field dataset Field

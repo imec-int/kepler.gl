@@ -533,6 +533,56 @@ export function processGeojson(rawData) {
   return processRowObject(allDataRows);
 }
 
+export function processGraph(rawData) {
+  if (!rawData.graph) {
+    throw new Error('File is not a valid JSON Graph Format.');
+  }
+
+  const nodeMap = {};
+  const graphData = [];
+
+  rawData.graph.nodes.forEach(node => {
+    const {
+      id,
+      label,
+      metadata: {x, y, icon, ...metadata}
+    } = node;
+
+    const mappedNode = {
+      ...metadata,
+      id,
+      label,
+      coordinates: [x, y],
+      icon,
+      type: 'node',
+      from: null, // To align edges and nodes in the dataframe
+      to: null // To align edges and nodes in the dataframe
+    };
+
+    nodeMap[id] = mappedNode;
+    graphData.push(mappedNode);
+  });
+
+  rawData.graph.edges.forEach(edge => {
+    const {id, source, target, label, ...rest} = edge;
+
+    const from = nodeMap[source];
+    const to = nodeMap[target];
+
+    graphData.push({
+      ...rest,
+      id,
+      label,
+      coordinates: [...from.coordinates, ...to.coordinates],
+      type: 'edge',
+      from: from.label,
+      to: to.label
+    });
+  });
+
+  return processRowObject(graphData);
+}
+
 /**
  * On export data to csv
  * @param {import('utils/table-utils/data-container-interface').DataContainerInterface} dataContainer

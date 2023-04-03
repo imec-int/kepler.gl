@@ -736,6 +736,14 @@ class Layer {
       return scale;
     }
 
+    if (colorScale === 'treshold') {
+      return this.getVisChannelScale(
+        'treshold',
+        colorRange.ranges ? colorRange.ranges : colorDomain,
+        colorRange.colors.map(hexToRgb)
+      );
+    }
+
     return this.getVisChannelScale(colorScale, colorDomain, colorRange.colors.map(hexToRgb));
   }
 
@@ -769,10 +777,12 @@ class Layer {
         const args = [this.config[scale], this.config[domain], this.config.visConfig[range]];
         const isFixed = fixed && this.config.visConfig[fixed];
 
-        const scaleFunction =
-          channelScaleType === CHANNEL_SCALES.color
-            ? this.getColorScale(...args)
-            : this.getVisChannelScale(...args, isFixed);
+        let scaleFunction;
+        if (channelScaleType === CHANNEL_SCALES.color) {
+          scaleFunction = this.getColorScale(...args);
+        } else {
+          scaleFunction = this.getVisChannelScale(...args, isFixed);
+        }
 
         attributeAccessors[accessor] = d =>
           this.getEncodedChannelValue(
@@ -798,9 +808,10 @@ class Layer {
 
   getVisChannelScale(scale, domain, range, fixed) {
     // @ts-ignore d3-scale type
-    return SCALE_FUNC[fixed ? 'linear' : scale]()
+    const scaleFunc = SCALE_FUNC[fixed ? 'linear' : scale]()
       .domain(domain)
       .range(fixed ? domain : range);
+    return scaleFunc;
   }
 
   /**

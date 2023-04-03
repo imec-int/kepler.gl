@@ -31,7 +31,8 @@ import {
   isInPolygon,
   diffFilters,
   getHistogram,
-  getTimestampFieldDomain
+  getTimestampFieldDomain,
+  isGeoJsonPositionInPolygon
 } from 'utils/filter-utils';
 
 import {getDatasetFieldIndexForFilter} from 'utils/gpu-filter-utils';
@@ -392,6 +393,341 @@ test('filterUtils -> Polygon getFilterFunction ', t => {
     true,
     `${data[0][0]} - ${data[0][1]} should be inside the range`
   );
+
+  t.end();
+});
+
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon (Point)', t => {
+  const {layers, data} = mockPolygonData;
+  const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
+
+  const pointPosition = {
+    type: 'Point',
+    coordinates: [data[0][0], data[0][0]]
+  };
+
+  t.equal(
+    isGeoJsonPositionInPolygon(pointPosition, polygonFilter.value),
+    false,
+    `${data[0][0]} - ${data[0][0]} should not be inside the range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: pointPosition
+      },
+      polygonFilter.value
+    ),
+    false,
+    `(feature) ${pointPosition.coordinates} should not be in range`
+  );
+
+  pointPosition.coordinates = [data[0][1], data[0][0]];
+
+  t.equal(
+    isGeoJsonPositionInPolygon(pointPosition, polygonFilter.value),
+    true,
+    `${data[0][1]} - ${data[0][1]} should be inside the range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: pointPosition
+      },
+      polygonFilter.value
+    ),
+    true,
+    `(feature) ${pointPosition.coordinates} should be in range`
+  );
+
+  t.end();
+});
+
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon (LineString)', t => {
+  const {layers, data} = mockPolygonData;
+  const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
+
+  const lineStringPosition = {
+    type: 'LineString',
+    coordinates: [data[0].slice(0, 2), data[0].slice(2)]
+  };
+
+  t.equal(
+    isGeoJsonPositionInPolygon(lineStringPosition, polygonFilter.value),
+    false,
+    `${lineStringPosition.coordinates} should not be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: lineStringPosition
+      },
+      polygonFilter.value
+    ),
+    false,
+    `(feature) ${lineStringPosition.coordinates} should not be in range`
+  );
+
+  lineStringPosition.coordinates = [
+    [data[0][1], data[0][0]],
+    [data[0][1], data[2][0]]
+  ];
+
+  t.equal(
+    isGeoJsonPositionInPolygon(lineStringPosition, polygonFilter.value),
+    true,
+    `${lineStringPosition.coordinates} should be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: lineStringPosition
+      },
+      polygonFilter.value
+    ),
+    true,
+    `(feature) ${lineStringPosition.coordinates} should be in range`
+  );
+
+  t.end();
+});
+
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon (Polygon)', t => {
+  const {layers, data} = mockPolygonData;
+  const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
+
+  const polygonPosition = {
+    type: 'Polygon',
+    coordinates: [
+      [
+        [data[0][1], data[0][0]],
+        [data[0][1], data[2][0]],
+        [data[0][1], data[0][0]]
+      ]
+    ]
+  };
+
+  t.equal(
+    isGeoJsonPositionInPolygon(polygonPosition, polygonFilter.value),
+    true,
+    `${polygonPosition.coordinates} should be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: polygonPosition
+      },
+      polygonFilter.value
+    ),
+    true,
+    `(feature) ${polygonPosition.coordinates} should be in range`
+  );
+
+  polygonPosition.coordinates = [
+    [data[0].slice(0, 2), data[0].slice(0, 2), data[0].slice(0, 2), data[0].slice(2)]
+  ];
+
+  t.equal(
+    isGeoJsonPositionInPolygon(polygonPosition, polygonFilter.value),
+    false,
+    `${polygonPosition.coordinates} should not be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: polygonPosition
+      },
+      polygonFilter.value
+    ),
+    false,
+    `(feature) ${polygonPosition.coordinates} should not be in range`
+  );
+
+  polygonPosition.coordinates = [
+    // only the exterior Line Ring should matter (first array)
+    [
+      [data[0][1], data[0][0]],
+      [data[0][1], data[2][0]],
+      [data[0][1], data[0][0]]
+    ],
+    [data[0].slice(0, 2), data[0].slice(2)]
+  ];
+
+  t.equal(
+    isGeoJsonPositionInPolygon(polygonPosition, polygonFilter.value),
+    true,
+    `${polygonPosition.coordinates} should be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: polygonPosition
+      },
+      polygonFilter.value
+    ),
+    true,
+    `(feature) ${polygonPosition.coordinates} should be in range`
+  );
+
+  t.end();
+});
+
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon (MultiPolygon)', t => {
+  const {layers, data} = mockPolygonData;
+  const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
+  const multiPolygonPosition = {
+    type: 'MultiPolygon',
+    coordinates: [
+      [
+        [
+          [data[0][1], data[0][0]],
+          [data[2][1], data[2][0]],
+          [data[0][1], data[0][0]]
+        ]
+      ],
+      [
+        [
+          [data[2][1], data[2][0]],
+          [data[0][1], data[0][0]],
+          [data[2][1], data[2][0]]
+        ]
+      ]
+    ]
+  };
+
+  t.equal(
+    isGeoJsonPositionInPolygon(multiPolygonPosition, polygonFilter.value),
+    true,
+    `${multiPolygonPosition.coordinates} should be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: multiPolygonPosition
+      },
+      polygonFilter.value
+    ),
+    true,
+    `(feature)${multiPolygonPosition.coordinates} should be in range`
+  );
+
+  multiPolygonPosition.coordinates[0] = [
+    [
+      [data[1][1], data[2][0]],
+      [data[0][1], data[0][0]],
+      [data[2][1], data[2][0]]
+    ]
+  ];
+
+  t.equal(
+    isGeoJsonPositionInPolygon(multiPolygonPosition, polygonFilter.value),
+    false,
+    `${multiPolygonPosition.coordinates} should not be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: multiPolygonPosition
+      },
+      polygonFilter.value
+    ),
+    false,
+    `(feature) ${multiPolygonPosition.coordinates} should not be in range`
+  );
+
+  multiPolygonPosition.coordinates[1] = [
+    [
+      [data[0][1], data[0][0]],
+      [data[1][1], data[2][0]],
+      [data[0][1], data[0][0]]
+    ]
+  ];
+
+  t.equal(
+    isGeoJsonPositionInPolygon(multiPolygonPosition, polygonFilter.value),
+    false,
+    `${multiPolygonPosition.coordinates} should not be in range`
+  );
+
+  t.equal(
+    isGeoJsonPositionInPolygon(
+      {
+        type: 'Feature',
+        geometry: multiPolygonPosition
+      },
+      polygonFilter.value
+    ),
+    false,
+    `(feature) ${multiPolygonPosition.coordinates} should not be in range`
+  );
+
+  t.end();
+});
+
+test('filterUtils -> Polygon isGeoJsonPositionInPolygon (Position as String)', t => {
+  const {layers, data} = mockPolygonData;
+  const polygonFilter = generatePolygonFilter(layers, mockPolygonFeature);
+
+  const multiPolygonPosition = {
+    type: 'MultiPolygon',
+    coordinates: [
+      [
+        [
+          [data[0][1], data[0][0]],
+          [data[2][1], data[2][0]],
+          [data[0][1], data[0][0]]
+        ]
+      ],
+      [
+        [
+          [data[2][1], data[2][0]],
+          [data[0][1], data[0][0]],
+          [data[2][1], data[2][0]]
+        ]
+      ]
+    ]
+  };
+
+  t.equal(
+    isGeoJsonPositionInPolygon(JSON.stringify(multiPolygonPosition), polygonFilter.value),
+    true,
+    `${multiPolygonPosition.coordinates} should be in range`
+  );
+
+  multiPolygonPosition.coordinates[0] = [
+    [
+      [data[1][1], data[2][0]],
+      [data[0][1], data[0][0]],
+      [data[2][1], data[2][0]]
+    ]
+  ];
+
+  t.equal(
+    isGeoJsonPositionInPolygon(JSON.stringify(multiPolygonPosition), polygonFilter.value),
+    false,
+    `${multiPolygonPosition.coordinates} should not be in range`
+  );
+
+  const malformedString = 'something that is not json';
+  t.equal(isGeoJsonPositionInPolygon(malformedString, polygonFilter.value), true);
 
   t.end();
 });

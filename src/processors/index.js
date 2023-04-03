@@ -24,6 +24,7 @@ export {
   processGeojson,
   processCsvData,
   processRowObject,
+  processGraph,
   processKeplerglJSON,
   processKeplerglDataset,
   analyzerTypeToFieldType,

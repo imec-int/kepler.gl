@@ -32,6 +32,7 @@ import {default as ScenegraphLayer} from './scenegraph-layer/scenegraph-layer';
 import {default as TripLayer} from './trip-layer/trip-layer';
 import {default as S2GeometryLayer} from './s2-geometry-layer/s2-geometry-layer';
 import {default as TileLayer} from './tile-layer/tile-layer';
+import {default as GraphLayer} from './graph-layer/graph-layer';
 import {LAYER_TYPES} from './types';
 import {default as WMSLayer} from './wms-layer/wms-layer';
 
@@ -54,7 +55,8 @@ export const KeplerGlLayers = {
   TripLayer,
   S2GeometryLayer,
   TileLayer,
-  WMSLayer
+  WMSLayer,
+  GraphLayer
 };
 
 export const LayerClasses = {
@@ -72,7 +74,8 @@ export const LayerClasses = {
   [LAYER_TYPES.trip]: TripLayer,
   [LAYER_TYPES.s2]: S2GeometryLayer,
   [LAYER_TYPES.tile]: TileLayer,
-  [LAYER_TYPES.wms]: WMSLayer
+  [LAYER_TYPES.wms]: WMSLayer,
+  [LAYER_TYPES.graph]: GraphLayer
 };
 
 export {LAYER_VIS_CONFIGS} from './layer-factory';
