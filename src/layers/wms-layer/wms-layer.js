@@ -34,6 +34,8 @@ export default class WMSLayer extends Layer {
     const {dataContainer} = datasets[this.config.dataId];
     // extract URL from row 0 column 0
     const newUrl = dataContainer.valueAt(0, 0);
+    const styles = dataContainer.valueAt(0, 2);
+    const crs = dataContainer.valueAt(0, 1);
     const oldUrl = oldLayerData ? oldLayerData.url : undefined;
     let url = oldUrl;
     if (oldUrl !== newUrl) {
@@ -45,6 +47,8 @@ export default class WMSLayer extends Layer {
     });
     return {
       url,
+      styles,
+      crs,
       ...accessors
     };
   }
@@ -55,7 +59,7 @@ export default class WMSLayer extends Layer {
 
   renderLayer(opts) {
     const {data} = opts;
-    const {url} = data;
+    const {url, crs, styles} = data;
 
     // Create new deck.gl WMS Layer with Bitmap sublayers
     return [
@@ -77,8 +81,8 @@ export default class WMSLayer extends Layer {
             height: 512,
             request: 'GetMap',
             service: 'WMS',
-            srs: 'EPSG:4326',
-            styles: 'bruges-dev:BelAQI-raster-style',
+            srs: crs ? crs : 'EPSG:4326',
+            styles: styles ? styles : '',
             version: '1.1.1',
             width: 512,
             transparent: 'true'
@@ -101,10 +105,11 @@ export default class WMSLayer extends Layer {
             bounds: [west, south, east, north]
           });
         },
-        onTileError: error => {
+        onTileError: () => {
           // do nothing! :D
           // console.error('Tile error', error);
-          return error;
+          // return error;
+          return;
         }
       })
     ];
