@@ -151,7 +151,7 @@ class App extends Component {
     // this._loadPointData();
     // this._loadGeojsonData();
     // this._loadTripGeoJson();
-    this._loadGraphLayer();
+    // this._loadGraphLayer();
     // this._loadIconData();
     // this._loadH3HexagonData();
     // this._loadH3HData();
@@ -160,6 +160,7 @@ class App extends Component {
     // this._loadBelAQI();
     // Notifications
     // this._loadMockNotifications();
+    this._addWMSLayer();
   }
 
   async _loadH3HData() {
@@ -261,7 +262,7 @@ class App extends Component {
             data: processRowObject([
               {
                 url:
-                  'http://localhost:8085/geoserver/geoserver-imec/wms?layers=geoserver-imec:cf_avg_friday',
+                  'http://localhost:8085/geoserver/geoserver-imec/wms?layers=geoserver-imec:cf_avg_friday&time=1970-01-01T09:00:00.000Z',
                 crs: 'EPSG:4326',
                 styles: 'geoserver-imec:CF-style'
               }

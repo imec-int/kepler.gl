@@ -69,9 +69,7 @@ export default class WMSLayer extends Layer {
         maxZoom: 19,
         tileSize: 512,
 
-        // TODO: check if we can use this function to fetch tiles, and suppress the console errors
         getTileData(tile) {
-          // const {props} = this;
           const wmsUrl = url;
           const {bbox} = tile;
           const {east, north, south, west} = bbox;
@@ -106,9 +104,6 @@ export default class WMSLayer extends Layer {
           });
         },
         onTileError: () => {
-          // do nothing! :D
-          // console.error('Tile error', error);
-          // return error;
           return;
         }
       })
