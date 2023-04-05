@@ -271,12 +271,13 @@ class App extends Component {
         ],
         config: {
           keepExistingConfig: true,
+          version: 'v1',
           config: {
             visState: {
               layers: [
                 {
-                  type: 'wms',
                   label: 'wms layer',
+                  type: 'wms',
                   config: {
                     dataId: 'wms-layer-1',
                     isVisible: true
