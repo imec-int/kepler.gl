@@ -151,7 +151,7 @@ class App extends Component {
     // this._loadPointData();
     // this._loadGeojsonData();
     // this._loadTripGeoJson();
-    this._loadGraphLayer();
+    // this._loadGraphLayer();
     // this._loadIconData();
     // this._loadH3HexagonData();
     // this._loadH3HData();
@@ -160,6 +160,7 @@ class App extends Component {
     // this._loadBelAQI();
     // Notifications
     // this._loadMockNotifications();
+    this._addWMSLayer();
   }
 
   async _loadH3HData() {
@@ -249,20 +250,21 @@ class App extends Component {
   //   );
   // };
 
-  _addTileLayer = () => {
+  _addWMSLayer = () => {
     this.props.dispatch(
       addDataToMap({
         datasets: [
           {
             info: {
-              id: `tile-layer-1`,
-              label: `WMTS Layer`
+              id: `wms-layer-1`,
+              label: `WMS Layer`
             },
             data: processRowObject([
               {
                 url:
-                  'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_30_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-                // 'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:pm10_atmo_street-20190121-0600UT&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+                  'https://api.dev.precinct.odt.imec-apt.be/geoserver/Cityflows/wms?layers=Cityflows%3Astreets_daily_profiles&time=1970-01-01T09:00:00.000Z&CQL_FILTER=profile_type+=+%27FRIDAY%27',
+                crs: 'EPSG:4326',
+                styles: 'Cityflows:cityflows-profile'
               }
             ])
           }
@@ -274,7 +276,46 @@ class App extends Component {
             visState: {
               layers: [
                 {
+                  label: 'wms layer',
+                  type: 'wms',
+                  config: {
+                    dataId: 'wms-layer-1',
+                    isVisible: true
+                  }
+                }
+              ]
+            }
+          }
+        }
+      })
+    );
+  };
+
+  _addTileLayer = () => {
+    this.props.dispatch(
+      addDataToMap({
+        datasets: [
+          {
+            info: {
+              id: `tile-layer-1`,
+              label: `Tile Layer`
+            },
+            data: processRowObject([
+              {
+                url:
+                  'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_30_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+              }
+            ])
+          }
+        ],
+        config: {
+          keepExistingConfig: true,
+          config: {
+            visState: {
+              layers: [
+                {
                   type: 'tile',
+                  label: 'tile layer',
                   config: {
                     dataId: 'tile-layer-1',
                     isVisible: true
