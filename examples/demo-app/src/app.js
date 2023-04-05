@@ -262,9 +262,9 @@ class App extends Component {
             data: processRowObject([
               {
                 url:
-                  'http://localhost:8085/geoserver/geoserver-imec/wms?layers=geoserver-imec:cf_avg_friday&time=1970-01-01T09:00:00.000Z',
+                  'https://api.dev.precinct.odt.imec-apt.be/geoserver/Cityflows/wms?layers=Cityflows%3Astreets_daily_profiles&time=1970-01-01T09:00:00.000Z&CQL_FILTER=profile_type+=+%27FRIDAY%27',
                 crs: 'EPSG:4326',
-                styles: 'geoserver-imec:CF-style'
+                styles: 'Cityflows:cityflows-profile'
               }
             ])
           }
@@ -296,13 +296,13 @@ class App extends Component {
         datasets: [
           {
             info: {
-              id: `wms-layer-1`,
-              label: `WMS Layer`
+              id: `tile-layer-1`,
+              label: `Tile Layer`
             },
             data: processRowObject([
               {
                 url:
-                  'https://api.dev.bruges.odt.imec-apt.be/geoserver/bruges-dev/wms?layers=bruges-dev:pm10_atmo_street-20190121-0500UT'
+                  'http://localhost:8085/geoserver/gwc/service/wmts?layer=geoserver-imec:19_05_2022 10_30_00-01&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
               }
             ])
           }
@@ -313,10 +313,10 @@ class App extends Component {
             visState: {
               layers: [
                 {
-                  type: 'wms',
-                  label: 'wms layer',
+                  type: 'tile',
+                  label: 'tile layer',
                   config: {
-                    dataId: 'wms-layer-1',
+                    dataId: 'tile-layer-1',
                     isVisible: true
                   }
                 }
