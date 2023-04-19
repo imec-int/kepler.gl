@@ -18,25 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import {default as PointLayer} from './point-layer/point-layer';
-import {default as ArcLayer} from './arc-layer/arc-layer';
-import {default as LineLayer} from './line-layer/line-layer';
-import {default as GridLayer} from './grid-layer/grid-layer';
-import {default as HexagonLayer} from './hexagon-layer/hexagon-layer';
-import {default as GeojsonLayer} from './geojson-layer/geojson-layer';
-import {default as ClusterLayer} from './cluster-layer/cluster-layer';
-import {default as IconLayer} from './icon-layer/icon-layer';
-import {default as HeatmapLayer} from './heatmap-layer/heatmap-layer';
-import {default as H3Layer} from './h3-hexagon-layer/h3-hexagon-layer';
-import {default as ScenegraphLayer} from './scenegraph-layer/scenegraph-layer';
-import {default as TripLayer} from './trip-layer/trip-layer';
-import {default as S2GeometryLayer} from './s2-geometry-layer/s2-geometry-layer';
-import {default as TileLayer} from './tile-layer/tile-layer';
-import {LAYER_TYPES} from './types';
+import { default as PointLayer } from './point-layer/point-layer';
+import { default as ArcLayer } from './arc-layer/arc-layer';
+import { default as LineLayer } from './line-layer/line-layer';
+import { default as GridLayer } from './grid-layer/grid-layer';
+import { default as HexagonLayer } from './hexagon-layer/hexagon-layer';
+import { default as GeojsonLayer } from './geojson-layer/geojson-layer';
+import { default as ClusterLayer } from './cluster-layer/cluster-layer';
+import { default as IconLayer } from './icon-layer/icon-layer';
+import { default as HeatmapLayer } from './heatmap-layer/heatmap-layer';
+import { default as H3Layer } from './h3-hexagon-layer/h3-hexagon-layer';
+import { default as ScenegraphLayer } from './scenegraph-layer/scenegraph-layer';
+import { default as TripLayer } from './trip-layer/trip-layer';
+import { default as S2GeometryLayer } from './s2-geometry-layer/s2-geometry-layer';
+import { default as TileLayer } from './tile-layer/tile-layer';
+import { default as FloatBitmapLayer } from './float-bitmap-layer/float-bitmap-layer';
+import { LAYER_TYPES } from './types';
 
 // base layer
-export {default as Layer, OVERLAY_TYPE, LAYER_ID_LENGTH, colorMaker} from './base-layer';
-export type {LayerBaseConfig, LayerColumns, LayerColumn} from './base-layer';
+export { default as Layer, OVERLAY_TYPE, LAYER_ID_LENGTH, colorMaker } from './base-layer';
+export type { LayerBaseConfig, LayerColumns, LayerColumn } from './base-layer';
 
 // individual layers
 export const KeplerGlLayers = {
@@ -53,7 +54,8 @@ export const KeplerGlLayers = {
   ScenegraphLayer,
   TripLayer,
   S2GeometryLayer,
-  TileLayer
+  TileLayer,
+  FloatBitmapLayer
 };
 
 export type LayerClassesType = typeof LayerClasses;
@@ -71,10 +73,11 @@ export const LayerClasses = {
   [LAYER_TYPES['3D']]: ScenegraphLayer,
   [LAYER_TYPES.trip]: TripLayer,
   [LAYER_TYPES.s2]: S2GeometryLayer,
-  [LAYER_TYPES.tile]: TileLayer
+  [LAYER_TYPES.tile]: TileLayer,
+  [LAYER_TYPES.bitmap]: FloatBitmapLayer
 };
 
-export type OVERLAY_TYPE = {[key: string]: string};
+export type OVERLAY_TYPE = { [key: string]: string };
 
-export {LAYER_VIS_CONFIGS} from './layer-factory';
-export type {LayerVisConfig} from './layer-factory';
+export { LAYER_VIS_CONFIGS } from './layer-factory';
+export type { LayerVisConfig } from './layer-factory';
