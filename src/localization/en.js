@@ -121,7 +121,8 @@ export default {
       s2: 'S2',
       '3d': '3D',
       tile: 'tile',
-      wms: 'WMS'
+      wms: 'WMS',
+      floatbitmap: 'floatbitmap'
     }
   },
   layerVisConfigs: {

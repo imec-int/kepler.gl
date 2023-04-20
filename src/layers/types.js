@@ -37,5 +37,5 @@ export const LAYER_TYPES = keyMirror({
   tile: null,
   wms: null,
   graph: null,
-  bitmap: null
+  floatbitmap: null
 });

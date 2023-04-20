@@ -23,7 +23,9 @@ import BitmapLayer from '../../deckgl-layers/float-bitmap-layer/float-bitmap-lay
 import wktParser from 'wellknown';
 
 export const BitmapLayerVisConfigs = {
-  colorRange: 'colorRange'
+  colorRange: 'colorRange',
+  sizeRange: 'strokeWidthRange',
+  targetColor: 'targetColor'
 };
 
 export default class FloatBitmapLayer extends Layer {
@@ -33,16 +35,44 @@ export default class FloatBitmapLayer extends Layer {
     this.registerVisConfig(BitmapLayerVisConfigs);
   }
 
-  static get type() {
-    return 'float-bitmap';
-  }
   get type() {
-    return FloatBitmapLayer.type;
+    return 'floatbitmap';
   }
 
   get name() {
-    return 'FloatBitmap';
+    return 'floatbitmap';
   }
+
+  // get visualChannels() {
+  //   return {
+  //     color: {
+  //       ...super.visualChannels.color,
+  //       accessor: 'getFillColor',
+  //       condition: config => config.visConfig.filled,
+  //       defaultValue: config => config.color
+  //     },
+  //     strokeColor: {
+  //       property: 'strokeColor',
+  //       key: 'strokeColor',
+  //       field: 'strokeColorField',
+  //       scale: 'strokeColorScale',
+  //       domain: 'strokeColorDomain',
+  //       range: 'strokeColorRange',
+  //       accessor: 'getLineColor',
+  //       condition: config => config.visConfig.outline,
+  //       defaultValue: config => config.visConfig.strokeColor || config.color
+  //     },
+  //     size: {
+  //       ...super.visualChannels.size,
+  //       property: 'radius',
+  //       range: 'radiusRange',
+  //       fixed: 'fixedRadius',
+  //       channelScaleType: 'radius',
+  //       accessor: 'getRadius',
+  //       defaultValue: 1
+  //     }
+  //   };
+  // }
 
   formatLayerData(datasets, oldLayerData) {
     if (this.config.dataId === null) {
@@ -78,13 +108,8 @@ export default class FloatBitmapLayer extends Layer {
     };
   }
 
-  shouldRenderLayer() {
-    return typeof this.type === 'string' && this.config.isVisible && this.hasAllColumns();
-  }
-
   renderLayer(opts) {
     const {data} = opts;
-
     // Create new deck.gl Tile Layer with Bitmap sublayers
     return [
       new BitmapLayer({
@@ -99,8 +124,16 @@ export default class FloatBitmapLayer extends Layer {
           data.bottomRight.coordinates[1]
         ],
         colorScale: {
-          ranges: [0, 0.5, 1],
-          colors: ['#000000', '#ffffff', '#ff0000']
+          ranges: [0, 0.1, 0.3, 0.6, 0.8, 1, 1.5],
+          colors: [
+            '#00000000',
+            '#eaf5fdaa',
+            '#bbdefbaa',
+            '#42a5f5',
+            '#1e88e5',
+            '#1565c0',
+            '#0d47a1'
+          ]
         },
         loadOptions: {
           imagebitmap: {

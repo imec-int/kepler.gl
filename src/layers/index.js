@@ -78,7 +78,7 @@ export const LayerClasses = {
   [LAYER_TYPES.tile]: TileLayer,
   [LAYER_TYPES.wms]: WMSLayer,
   [LAYER_TYPES.graph]: GraphLayer,
-  [LAYER_TYPES.bitmap]: FloatBitmapLayer
+  [LAYER_TYPES.floatbitmap]: FloatBitmapLayer
 };
 
 export {LAYER_VIS_CONFIGS} from './layer-factory';
