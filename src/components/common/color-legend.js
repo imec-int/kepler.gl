@@ -91,9 +91,8 @@ const getQuantLegends = (scale, labelFormat) => {
 
   const labels = scale.range().map(d => {
     const invert = scale.invertExtent(d);
-    return `${labelFormat(invert[0] ? invert[0] : 0)} to ${
-      invert[1] ? labelFormat(invert[1]) : Infinity
-    }`;
+    if (invert[0] === undefined) return '';
+    return `${labelFormat(invert[0])} to ${invert[1] ? labelFormat(invert[1]) : Infinity}`;
   });
 
   return {

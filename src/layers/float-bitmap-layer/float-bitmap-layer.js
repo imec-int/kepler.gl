@@ -59,7 +59,8 @@ export default class FloatBitmapLayer extends Layer {
     if (this.config.dataId === null) {
       return {};
     }
-    const {dataContainer} = datasets[this.config.dataId];
+    const layerDataset = datasets[this.config.dataId];
+    const {dataContainer} = layerDataset;
     // extract URL from row 0 column 0
     const width = dataContainer.valueAt(0, 0);
     const height = dataContainer.valueAt(0, 1);
@@ -74,8 +75,11 @@ export default class FloatBitmapLayer extends Layer {
     const topLeft = wktParser(rawTopLeft);
     const bottomRight = wktParser(rawBottomRight);
 
+    const getPosition = this.getPositionAccessor(dataContainer);
+
     // const oldUrl = oldLayerData ? oldLayerData.url : undefined;
     const accessors = this.getAttributeAccessors({
+      getPosition,
       dataContainer
     });
     return {
