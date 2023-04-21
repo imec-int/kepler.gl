@@ -189,6 +189,9 @@ class App extends Component {
         ],
         options: {
           keepExistingConfig: true,
+          autoCreateLayers: false
+        },
+        config: {
           version: 'v1',
           config: {
             visState: {
@@ -198,11 +201,6 @@ class App extends Component {
                   type: 'floatbitmap',
                   config: {
                     dataId: 'floodcast-id',
-                    columns: {
-                      data: 'data',
-                      width: 'width',
-                      height: 'height'
-                    },
                     isVisible: true
                   }
                 }

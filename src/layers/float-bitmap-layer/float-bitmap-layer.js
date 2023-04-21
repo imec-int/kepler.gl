@@ -43,36 +43,36 @@ export default class FloatBitmapLayer extends Layer {
     return 'floatbitmap';
   }
 
-  // get visualChannels() {
-  //   return {
-  //     color: {
-  //       ...super.visualChannels.color,
-  //       accessor: 'getFillColor',
-  //       condition: config => config.visConfig.filled,
-  //       defaultValue: config => config.color
-  //     },
-  //     strokeColor: {
-  //       property: 'strokeColor',
-  //       key: 'strokeColor',
-  //       field: 'strokeColorField',
-  //       scale: 'strokeColorScale',
-  //       domain: 'strokeColorDomain',
-  //       range: 'strokeColorRange',
-  //       accessor: 'getLineColor',
-  //       condition: config => config.visConfig.outline,
-  //       defaultValue: config => config.visConfig.strokeColor || config.color
-  //     },
-  //     size: {
-  //       ...super.visualChannels.size,
-  //       property: 'radius',
-  //       range: 'radiusRange',
-  //       fixed: 'fixedRadius',
-  //       channelScaleType: 'radius',
-  //       accessor: 'getRadius',
-  //       defaultValue: 1
-  //     }
-  //   };
-  // }
+  get visualChannels() {
+    return {
+      color: {
+        ...super.visualChannels.color,
+        accessor: 'getFillColor',
+        condition: config => config.visConfig.filled,
+        defaultValue: config => config.color
+      },
+      strokeColor: {
+        property: 'strokeColor',
+        key: 'strokeColor',
+        field: 'strokeColorField',
+        scale: 'strokeColorScale',
+        domain: 'strokeColorDomain',
+        range: 'strokeColorRange',
+        accessor: 'getLineColor',
+        condition: config => config.visConfig.outline,
+        defaultValue: config => config.visConfig.strokeColor || config.color
+      },
+      size: {
+        ...super.visualChannels.size,
+        property: 'radius',
+        range: 'radiusRange',
+        fixed: 'fixedRadius',
+        channelScaleType: 'radius',
+        accessor: 'getRadius',
+        defaultValue: 1
+      }
+    };
+  }
 
   formatLayerData(datasets, oldLayerData) {
     if (this.config.dataId === null) {
