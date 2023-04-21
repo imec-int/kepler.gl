@@ -736,9 +736,9 @@ class Layer {
       return scale;
     }
 
-    if (colorScale === 'treshold') {
+    if (colorScale === 'threshold') {
       return this.getVisChannelScale(
-        'treshold',
+        'threshold',
         colorRange.ranges ? colorRange.ranges : colorDomain,
         colorRange.colors.map(hexToRgb)
       );

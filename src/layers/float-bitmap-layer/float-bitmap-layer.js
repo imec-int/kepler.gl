@@ -51,7 +51,7 @@ export default class FloatBitmapLayer extends Layer {
   getDefaultLayerConfig(props = {}) {
     return {
       ...super.getDefaultLayerConfig(props),
-      colorScale: 'treshold'
+      colorScale: 'threshold'
     };
   }
 

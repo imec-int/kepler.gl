@@ -308,7 +308,7 @@ class App extends Component {
   //                     name: 'value',
   //                     type: 'real'
   //                   },
-  //                   colorScale: 'treshold'
+  //                   colorScale: 'threshold'
   //                 }
   //               }
   //             ]
@@ -436,7 +436,7 @@ class App extends Component {
                   },
                   visualChannels: {
                     colorField: {name: 'newState', type: 'integer'},
-                    colorScale: 'treshold'
+                    colorScale: 'threshold'
                   }
                 }
               ]
