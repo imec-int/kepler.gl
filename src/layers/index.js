@@ -35,6 +35,7 @@ import {default as TileLayer} from './tile-layer/tile-layer';
 import {default as GraphLayer} from './graph-layer/graph-layer';
 import {LAYER_TYPES} from './types';
 import {default as WMSLayer} from './wms-layer/wms-layer';
+import {default as FloatBitmapLayer} from './float-bitmap-layer/float-bitmap-layer';
 
 // base layer
 export {default as Layer, OVERLAY_TYPE, LAYER_ID_LENGTH, colorMaker} from './base-layer';
@@ -56,7 +57,8 @@ export const KeplerGlLayers = {
   S2GeometryLayer,
   TileLayer,
   WMSLayer,
-  GraphLayer
+  GraphLayer,
+  FloatBitmapLayer
 };
 
 export const LayerClasses = {
@@ -75,7 +77,8 @@ export const LayerClasses = {
   [LAYER_TYPES.s2]: S2GeometryLayer,
   [LAYER_TYPES.tile]: TileLayer,
   [LAYER_TYPES.wms]: WMSLayer,
-  [LAYER_TYPES.graph]: GraphLayer
+  [LAYER_TYPES.graph]: GraphLayer,
+  [LAYER_TYPES.floatbitmap]: FloatBitmapLayer
 };
 
 export {LAYER_VIS_CONFIGS} from './layer-factory';

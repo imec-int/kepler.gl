@@ -160,7 +160,67 @@ class App extends Component {
     // this._loadBelAQI();
     // Notifications
     // this._loadMockNotifications();
-    this._addWMSLayer();
+    // this._addWMSLayer();
+    this._loadBitmapLayer();
+  }
+
+  _loadBitmapLayer() {
+    const data = require('../floodcast-data/data.json');
+
+    this.props.dispatch(
+      addDataToMap({
+        datasets: [
+          {
+            info: {
+              label: 'Floodcast',
+              id: 'floodcast-id'
+            },
+            data: processRowObject(data)
+          }
+        ],
+        options: {
+          keepExistingConfig: true,
+          autoCreateLayers: false
+        },
+        config: {
+          version: 'v1',
+          config: {
+            visState: {
+              layers: [
+                {
+                  type: 'floatbitmap',
+                  config: {
+                    dataId: 'floodcast-id',
+                    label: 'bitmap layer',
+                    isVisible: true,
+                    visConfig: {
+                      colorRange: {
+                        name: 'BelAQI (PM2.5)',
+                        type: 'standard',
+                        category: 'BelAQI',
+                        ranges: [0, 0.1, 0.2, 0.25, 0.35, 0.4, 0.5, 0.6, 0.7, 1.5],
+                        colors: [
+                          '#1c00ff00',
+                          '#3599ff',
+                          '#2b9900',
+                          '#4dff01',
+                          '#fdff00',
+                          '#f9bb02',
+                          '#f66600',
+                          '#f50b00',
+                          '#990400',
+                          '#660200'
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      })
+    );
   }
 
   async _loadH3HData() {
@@ -239,7 +299,7 @@ class App extends Component {
   //                     name: 'value',
   //                     type: 'real'
   //                   },
-  //                   colorScale: 'treshold'
+  //                   colorScale: 'threshold'
   //                 }
   //               }
   //             ]
@@ -367,7 +427,7 @@ class App extends Component {
                   },
                   visualChannels: {
                     colorField: {name: 'newState', type: 'integer'},
-                    colorScale: 'treshold'
+                    colorScale: 'threshold'
                   }
                 }
               ]

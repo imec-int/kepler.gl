@@ -104,6 +104,7 @@ export type LayerClassesType = {
   tile: Layer;
   wms: Layer;
   graph: Layer;
+  floatbitmap: Layer;
 };
 export const LayerClasses: LayerClassesType;
 

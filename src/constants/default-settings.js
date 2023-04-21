@@ -309,7 +309,7 @@ export const SCALE_TYPES = keyMirror({
 
   // ordinal domain to linear range
   point: null,
-  treshold: null
+  threshold: null
 });
 
 export const SCALE_FUNC = {
@@ -320,7 +320,7 @@ export const SCALE_FUNC = {
   [SCALE_TYPES.sqrt]: scaleSqrt,
   [SCALE_TYPES.log]: scaleLog,
   [SCALE_TYPES.point]: scalePoint,
-  [SCALE_TYPES.treshold]: scaleThreshold
+  [SCALE_TYPES.threshold]: scaleThreshold
 };
 
 export const ALL_FIELD_TYPES = keyMirror({
@@ -453,7 +453,7 @@ export const AGGREGATION_TYPES = {
 };
 
 export const linearFieldScaleFunctions = {
-  [CHANNEL_SCALES.color]: [SCALE_TYPES.quantize, SCALE_TYPES.quantile, SCALE_TYPES.treshold],
+  [CHANNEL_SCALES.color]: [SCALE_TYPES.quantize, SCALE_TYPES.quantile, SCALE_TYPES.threshold],
   [CHANNEL_SCALES.radius]: [SCALE_TYPES.sqrt],
   [CHANNEL_SCALES.size]: [SCALE_TYPES.linear, SCALE_TYPES.sqrt, SCALE_TYPES.log]
 };
