@@ -22,21 +22,6 @@ import GL from '@luma.gl/constants';
 import {BitmapLayer} from '@deck.gl/layers';
 import {Texture2D} from '@luma.gl/webgl';
 
-// export type _FloatBitmapLayerProps = Omit<
-//   BitmapLayerProps,
-//   'image' | 'data' | 'transparentColor' | 'tintColor' | 'desaturate'
-// >;
-
-// export type ColorLegend = {
-//   ranges: number[];
-//   colors: string[];
-// };
-// export type FloatBitmapLayerProps = _FloatBitmapLayerProps & {
-//   binaryData: Float64Array;
-//   colorScale: ColorLegend;
-//   width: number;
-//   height: number;
-// };
 // Define a new bitmap layer type that can receive binary image data
 class FloatBitmapLayer extends BitmapLayer {
   initializeState() {

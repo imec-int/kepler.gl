@@ -23,9 +23,7 @@ import BitmapLayer from '../../deckgl-layers/float-bitmap-layer/float-bitmap-lay
 import wktParser from 'wellknown';
 
 export const BitmapLayerVisConfigs = {
-  colorRange: 'colorRange',
-  sizeRange: 'strokeWidthRange',
-  targetColor: 'targetColor'
+  colorRange: 'colorRange'
 };
 
 export default class FloatBitmapLayer extends Layer {
@@ -43,34 +41,17 @@ export default class FloatBitmapLayer extends Layer {
     return 'floatbitmap';
   }
 
-  get visualChannels() {
+  getVisualChannelDescription(key) {
     return {
-      color: {
-        ...super.visualChannels.color,
-        accessor: 'getFillColor',
-        condition: config => config.visConfig.filled,
-        defaultValue: config => config.color
-      },
-      strokeColor: {
-        property: 'strokeColor',
-        key: 'strokeColor',
-        field: 'strokeColorField',
-        scale: 'strokeColorScale',
-        domain: 'strokeColorDomain',
-        range: 'strokeColorRange',
-        accessor: 'getLineColor',
-        condition: config => config.visConfig.outline,
-        defaultValue: config => config.visConfig.strokeColor || config.color
-      },
-      size: {
-        ...super.visualChannels.size,
-        property: 'radius',
-        range: 'radiusRange',
-        fixed: 'fixedRadius',
-        channelScaleType: 'radius',
-        accessor: 'getRadius',
-        defaultValue: 1
-      }
+      label: 'layerVisConfigs.colorRange',
+      measure: this.config.label
+    };
+  }
+
+  getDefaultLayerConfig(props = {}) {
+    return {
+      ...super.getDefaultLayerConfig(props),
+      colorScale: 'treshold'
     };
   }
 
@@ -95,7 +76,6 @@ export default class FloatBitmapLayer extends Layer {
 
     // const oldUrl = oldLayerData ? oldLayerData.url : undefined;
     const accessors = this.getAttributeAccessors({
-      dataAccessor: dc => d => d,
       dataContainer
     });
     return {
@@ -110,7 +90,7 @@ export default class FloatBitmapLayer extends Layer {
 
   renderLayer(opts) {
     const {data} = opts;
-    // Create new deck.gl Tile Layer with Bitmap sublayers
+
     return [
       new BitmapLayer({
         id: 'binary-bitmap-layer',
@@ -123,18 +103,7 @@ export default class FloatBitmapLayer extends Layer {
           data.bottomRight.coordinates[0],
           data.bottomRight.coordinates[1]
         ],
-        colorScale: {
-          ranges: [0, 0.1, 0.3, 0.6, 0.8, 1, 1.5],
-          colors: [
-            '#00000000',
-            '#eaf5fdaa',
-            '#bbdefbaa',
-            '#42a5f5',
-            '#1e88e5',
-            '#1565c0',
-            '#0d47a1'
-          ]
-        },
+        colorScale: this.config.visConfig.colorRange,
         loadOptions: {
           imagebitmap: {
             premultiplyAlpha: 'premultiply'

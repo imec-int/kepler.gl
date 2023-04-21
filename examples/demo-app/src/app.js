@@ -197,11 +197,31 @@ class App extends Component {
             visState: {
               layers: [
                 {
-                  label: 'bitmap layer',
                   type: 'floatbitmap',
                   config: {
                     dataId: 'floodcast-id',
-                    isVisible: true
+                    label: 'bitmap layer',
+                    isVisible: true,
+                    visConfig: {
+                      colorRange: {
+                        name: 'BelAQI (PM2.5)',
+                        type: 'standard',
+                        category: 'BelAQI',
+                        ranges: [0, 0.1, 0.2, 0.25, 0.35, 0.4, 0.5, 0.6, 0.7, 1.5],
+                        colors: [
+                          '#1c00ff00',
+                          '#3599ff',
+                          '#2b9900',
+                          '#4dff01',
+                          '#fdff00',
+                          '#f9bb02',
+                          '#f66600',
+                          '#f50b00',
+                          '#990400',
+                          '#660200'
+                        ]
+                      }
+                    }
                   }
                 }
               ]
