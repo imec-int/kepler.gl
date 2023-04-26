@@ -94,10 +94,15 @@ export default class FloatBitmapLayer extends Layer {
 
   renderLayer(opts) {
     const {data} = opts;
+    const defaultLayerProps = this.getDefaultDeckLayerProps(opts);
+
+    // override default layer props
+    defaultLayerProps.extensions = [];
+    defaultLayerProps.opacity = 1;
 
     return [
       new BitmapLayer({
-        id: 'binary-bitmap-layer',
+        ...defaultLayerProps,
         binaryData: data.data,
         width: data.width,
         height: data.height,
