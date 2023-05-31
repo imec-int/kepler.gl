@@ -1,7 +1,7 @@
 {
   "name": "@imec-int/kepler.gl",
   "author": "imec <admin@imec-apt.be>",
-  "version": "2.5.5-16",
+  "version": "2.5.5-17",
   "description": "kepler.gl is a webgl based application to visualize large scale location data in the browser",
   "license": "MIT",
   "main": "dist/index.js",

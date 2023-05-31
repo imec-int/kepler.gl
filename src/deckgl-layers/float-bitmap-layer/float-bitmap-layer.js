@@ -95,11 +95,12 @@ class FloatBitmapLayer extends BitmapLayer {
 
   finalizeState() {
     super.finalizeState(this.context);
-    const {gl} = this.context;
     const {image} = this.state;
 
     // Cleanup the texture when the layer is removed
-    gl.deleteTexture(image);
+    if (image) {
+      image.delete();
+    }
   }
 }
 
